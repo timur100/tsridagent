@@ -411,6 +411,13 @@ const ElectronAgentManagement = () => {
             Übersicht
           </TabsTrigger>
           <TabsTrigger 
+            value="download" 
+            className="data-[state=active]:bg-[#d50c2d] data-[state=active]:text-white"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download & Installation
+          </TabsTrigger>
+          <TabsTrigger 
             value="devices" 
             className="data-[state=active]:bg-[#d50c2d] data-[state=active]:text-white"
           >
@@ -569,6 +576,230 @@ const ElectronAgentManagement = () => {
                   <Scan className="w-6 h-6 mb-2 text-purple-400" />
                   <span>Scanner Info</span>
                 </Button>
+              </div>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Download & Installation Tab */}
+        <TabsContent value="download" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Download Links */}
+            <Card className="bg-[#1a1a1a] border-[#333] p-6">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Download className="w-5 h-5 text-green-400" />
+                TSR Agent herunterladen
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">
+                Laden Sie den TSR Agent für Ihr Betriebssystem herunter. Der Agent verbindet sich automatisch mit dem Portal und bleibt online, solange Internet verfügbar ist.
+              </p>
+              
+              <div className="space-y-3">
+                {/* Windows Download */}
+                <div className="flex items-center justify-between p-4 bg-[#262626] rounded-lg border border-[#444] hover:border-cyan-500/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500/20 rounded-lg">
+                      <Monitor className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <div className="font-bold">Windows</div>
+                      <div className="text-xs text-gray-400">Windows 10/11 (64-bit)</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700"
+                      onClick={() => toast.success('Windows Installer wird vorbereitet... (Build Pipeline erforderlich)')}
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      .exe
+                    </Button>
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-500/50 text-blue-400"
+                      onClick={() => toast.success('Portable Version wird vorbereitet...')}
+                    >
+                      Portable
+                    </Button>
+                  </div>
+                </div>
+
+                {/* macOS Download */}
+                <div className="flex items-center justify-between p-4 bg-[#262626] rounded-lg border border-[#444] hover:border-cyan-500/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gray-500/20 rounded-lg">
+                      <Cpu className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <div>
+                      <div className="font-bold">macOS</div>
+                      <div className="text-xs text-gray-400">macOS 11+ (Intel & Apple Silicon)</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm"
+                      className="bg-gray-600 hover:bg-gray-700"
+                      onClick={() => toast.success('macOS DMG wird vorbereitet...')}
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      .dmg
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Linux Download */}
+                <div className="flex items-center justify-between p-4 bg-[#262626] rounded-lg border border-[#444] hover:border-cyan-500/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-orange-500/20 rounded-lg">
+                      <Terminal className="w-6 h-6 text-orange-400" />
+                    </div>
+                    <div>
+                      <div className="font-bold">Linux</div>
+                      <div className="text-xs text-gray-400">Ubuntu, Debian, Fedora (64-bit)</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm"
+                      className="bg-orange-600 hover:bg-orange-700"
+                      onClick={() => toast.success('Linux AppImage wird vorbereitet...')}
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      .AppImage
+                    </Button>
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="border-orange-500/50 text-orange-400"
+                      onClick={() => toast.success('.deb Package wird vorbereitet...')}
+                    >
+                      .deb
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-yellow-300">
+                    <strong>Build Pipeline erforderlich:</strong> Die Download-Links werden aktiv, sobald die CI/CD-Pipeline eingerichtet ist. Kontaktieren Sie den Administrator.
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Installation Instructions */}
+            <Card className="bg-[#1a1a1a] border-[#333] p-6">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <FileCode className="w-5 h-5 text-cyan-400" />
+                Installations-Anleitung
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="p-4 bg-[#262626] rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">1</Badge>
+                    <span className="font-bold">Installer herunterladen</span>
+                  </div>
+                  <p className="text-sm text-gray-400 ml-7">
+                    Wählen Sie die passende Version für Ihr Betriebssystem und laden Sie den Installer herunter.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-[#262626] rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">2</Badge>
+                    <span className="font-bold">Installation starten</span>
+                  </div>
+                  <p className="text-sm text-gray-400 ml-7">
+                    Führen Sie den Installer aus. Bei Windows klicken Sie auf "Ja" wenn die UAC-Abfrage erscheint.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-[#262626] rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">3</Badge>
+                    <span className="font-bold">Agent konfigurieren</span>
+                  </div>
+                  <p className="text-sm text-gray-400 ml-7">
+                    Beim ersten Start wird nach Tenant und Standort gefragt. Der Agent verbindet sich automatisch mit dem Portal.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-[#262626] rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/50">4</Badge>
+                    <span className="font-bold">Fertig!</span>
+                  </div>
+                  <p className="text-sm text-gray-400 ml-7">
+                    Der Agent startet automatisch mit dem System und bleibt mit dem Portal verbunden.
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Connection Info */}
+            <Card className="bg-[#1a1a1a] border-[#333] p-6 lg:col-span-2">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Wifi className="w-5 h-5 text-green-400" />
+                Verbindung zum Portal
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="p-4 bg-[#262626] rounded-lg">
+                  <div className="text-xs text-gray-400 mb-2">Server URL</div>
+                  <div className="font-mono text-cyan-400 text-sm break-all">{BACKEND_URL || 'https://agent.tsrid.com'}</div>
+                </div>
+                <div className="p-4 bg-[#262626] rounded-lg">
+                  <div className="text-xs text-gray-400 mb-2">Heartbeat Intervall</div>
+                  <div className="font-mono text-cyan-400">30 Sekunden</div>
+                </div>
+                <div className="p-4 bg-[#262626] rounded-lg">
+                  <div className="text-xs text-gray-400 mb-2">Auto-Reconnect</div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-green-400">Aktiviert</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-[#0d0d0d] rounded-lg font-mono text-sm overflow-x-auto">
+                <div className="text-gray-400 mb-2"># Agent API Endpoints</div>
+                <div className="text-cyan-400">POST {BACKEND_URL || 'https://agent.tsrid.com'}/api/electron-agent/devices/register</div>
+                <div className="text-cyan-400">POST {BACKEND_URL || 'https://agent.tsrid.com'}/api/electron-agent/devices/heartbeat</div>
+                <div className="text-green-400">GET  {BACKEND_URL || 'https://agent.tsrid.com'}/api/electron-agent/versions/latest</div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                  <h4 className="font-bold text-green-400 mb-2 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Was der Agent tut
+                  </h4>
+                  <ul className="text-sm text-gray-300 space-y-1">
+                    <li>• Automatische Registrierung beim Portal</li>
+                    <li>• Heartbeat alle 30 Sekunden</li>
+                    <li>• Scanner-Status überwachen</li>
+                    <li>• Automatische Updates empfangen</li>
+                    <li>• Offline-Modus mit Sync bei Reconnect</li>
+                  </ul>
+                </div>
+                <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                  <h4 className="font-bold text-cyan-400 mb-2 flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Sicherheit
+                  </h4>
+                  <ul className="text-sm text-gray-300 space-y-1">
+                    <li>• HTTPS-verschlüsselte Verbindung</li>
+                    <li>• Eindeutige Device-ID pro Installation</li>
+                    <li>• Kein Zugriff auf Dateisystem</li>
+                    <li>• Sandbox-Isolation (Electron)</li>
+                    <li>• Code-signierte Installer</li>
+                  </ul>
+                </div>
               </div>
             </Card>
           </div>
