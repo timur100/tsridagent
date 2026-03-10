@@ -12,8 +12,9 @@ import {
   Activity, Server, Building, Eye,
   ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, Power, MessageSquare, Terminal,
   FileText, Plus, Edit, Trash2, Timer, Send, History, Copy, Wrench,
-  Bold, Italic, Underline
+  Bold, Italic, Underline, Layers
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import MessageEditor from '../components/MessageEditor';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -39,6 +40,7 @@ import toast from 'react-hot-toast';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const DeviceAgentManagement = () => {
+  const navigate = useNavigate();
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
   const [tenants, setTenants] = useState([]);
@@ -554,6 +556,16 @@ const DeviceAgentManagement = () => {
           </div>
         </div>
         <div className="flex gap-2">
+          {/* Link zu Electron Agent Management */}
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/admin/electron-agents')}
+            className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20"
+            data-testid="electron-agents-link"
+          >
+            <Layers className="w-4 h-4 mr-2" />
+            Electron Agents
+          </Button>
           {selectedDevices.length > 0 && (
             <Button 
               onClick={() => setShowRemoteDialog(true)}

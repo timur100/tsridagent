@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Monitor, Cpu, Download, Upload, RefreshCw, Settings, 
   CheckCircle, XCircle, Clock, AlertTriangle, Wifi, WifiOff,
@@ -44,6 +45,7 @@ import toast from 'react-hot-toast';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const ElectronAgentManagement = () => {
+  const navigate = useNavigate();
   // State
   const [devices, setDevices] = useState([]);
   const [versions, setVersions] = useState([]);
@@ -274,11 +276,12 @@ const ElectronAgentManagement = () => {
       <div className="mb-4">
         <Button 
           variant="ghost" 
-          onClick={() => window.history.back()}
+          onClick={() => navigate('/admin/devices')}
           className="text-gray-400 hover:text-white hover:bg-[#262626]"
+          data-testid="back-to-devices-btn"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Zurück
+          Zurück zu Device Agent
         </Button>
       </div>
       
