@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "TSRID ID Verification & Device Agent",
   "main": "main/main.js",
+  "homepage": "https://tsrid.com",
+  "author": {
+    "name": "TSRID Technologies",
+    "email": "support@tsrid.com"
+  },
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
@@ -33,9 +38,10 @@
       "category": "public.app-category.business"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": ["AppImage"],
       "icon": "assets/icon.png",
-      "category": "Office"
+      "category": "Office",
+      "maintainer": "support@tsrid.com"
     },
     "publish": {
       "provider": "github",
