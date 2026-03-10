@@ -1,7 +1,7 @@
 {
-  "name": "tsr-electron-agent",
+  "name": "tsrid-agent",
   "version": "1.0.0",
-  "description": "TSR ID Verification & Device Agent",
+  "description": "TSRID ID Verification & Device Agent",
   "main": "main/main.js",
   "scripts": {
     "start": "electron .",
@@ -13,8 +13,8 @@
     "build:all": "electron-builder --win --mac --linux"
   },
   "build": {
-    "appId": "com.tsr.electron-agent",
-    "productName": "TSR Agent",
+    "appId": "com.tsrid.agent",
+    "productName": "TSRID Agent",
     "directories": {
       "output": "dist"
     },
@@ -38,8 +38,9 @@
       "category": "Office"
     },
     "publish": {
-      "provider": "generic",
-      "url": "https://agent.tsrid.com/electron/updates"
+      "provider": "github",
+      "owner": "timur100",
+      "repo": "tsridagent"
     }
   },
   "dependencies": {

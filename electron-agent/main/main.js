@@ -35,7 +35,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, '../assets/icon.png'),
-    title: 'TSR Agent',
+    title: 'TSRID Agent',
     autoHideMenuBar: true
   });
 
@@ -217,6 +217,6 @@ if (!gotTheLock) {
   });
 }
 
-console.log(`TSR Agent v${app.getVersion()} starting...`);
+console.log(`TSRID Agent v${app.getVersion()} starting...`);
 console.log(`Platform: ${process.platform} ${process.arch}`);
 console.log(`Dev mode: ${isDev}`);

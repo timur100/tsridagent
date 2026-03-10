@@ -615,10 +615,10 @@ const ElectronAgentManagement = () => {
             <Card className="bg-[#1a1a1a] border-[#333] p-6">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 <Download className="w-5 h-5 text-green-400" />
-                TSR Agent herunterladen
+                TSRID Agent herunterladen
               </h3>
               <p className="text-gray-400 text-sm mb-6">
-                Laden Sie den TSR Agent für Ihr Betriebssystem herunter. Der Agent verbindet sich automatisch mit dem Portal und bleibt online, solange Internet verfügbar ist.
+                Laden Sie den TSRID Agent für Ihr Betriebssystem herunter. Der Agent verbindet sich automatisch mit dem Portal und bleibt online, solange Internet verfügbar ist.
               </p>
               
               <div className="space-y-3">

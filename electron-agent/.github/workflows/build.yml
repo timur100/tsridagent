@@ -89,10 +89,10 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.PORTAL_API_KEY }}" \
             -d '{
               "version": "${{ github.ref_name }}",
-              "release_url": "https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}",
+              "release_url": "https://github.com/timur100/tsridagent/releases/tag/${{ github.ref_name }}",
               "artifacts": {
-                "win": "tsr-agent-${{ github.ref_name }}-setup.exe",
-                "mac": "tsr-agent-${{ github.ref_name }}.dmg",
-                "linux": "tsr-agent-${{ github.ref_name }}.AppImage"
+                "win": "tsridagent-${{ github.ref_name }}-setup.exe",
+                "mac": "tsridagent-${{ github.ref_name }}.dmg",
+                "linux": "tsridagent-${{ github.ref_name }}.AppImage"
               }
             }'
