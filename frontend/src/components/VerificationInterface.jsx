@@ -1903,6 +1903,7 @@ const VerificationInterface = () => {
         requirePin={stationSettings.hasStationPin}
         onVerifyPin={verifyStationPin}
         stationName={adminSettings.stationName || 'TSRID Agent'}
+        stationCode={adminSettings.stationCode || adminSettings.locationCode || ''}
       />
 
       {/* Startup PIN Prompt - Electron only */}

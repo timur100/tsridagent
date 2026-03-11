@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Lock, Shield } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 const ScreensaverOverlay = ({ 
   isActive, 
@@ -7,36 +7,66 @@ const ScreensaverOverlay = ({
   requirePin = false,
   onVerifyPin,
   logoUrl = null,
-  stationName = 'TSRID Agent'
+  stationName = 'TSRID Agent',
+  stationCode = ''
 }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [logoPosition, setLogoPosition] = useState({ x: 50, y: 50 });
   const [showPinPad, setShowPinPad] = useState(false);
+  const [logoScale, setLogoScale] = useState(1);
+  const [logoRotation, setLogoRotation] = useState(0);
   const animationRef = useRef(null);
   const directionRef = useRef({ x: 1, y: 1 });
+  const scaleDirectionRef = useRef(1);
 
-  // Animate logo to prevent burn-in
+  // Animate logo to prevent burn-in with smooth movement and pulsing
   useEffect(() => {
     if (!isActive) return;
 
+    let frameCount = 0;
+    
     const animate = () => {
+      frameCount++;
+      
+      // Move logo
       setLogoPosition(prev => {
-        let newX = prev.x + directionRef.current.x * 0.3;
-        let newY = prev.y + directionRef.current.y * 0.2;
+        let newX = prev.x + directionRef.current.x * 0.15;
+        let newY = prev.y + directionRef.current.y * 0.1;
 
-        // Bounce off edges
-        if (newX <= 10 || newX >= 90) {
+        // Bounce off edges with some randomness
+        if (newX <= 15 || newX >= 85) {
           directionRef.current.x *= -1;
-          newX = Math.max(10, Math.min(90, newX));
+          directionRef.current.y += (Math.random() - 0.5) * 0.3;
+          newX = Math.max(15, Math.min(85, newX));
         }
-        if (newY <= 10 || newY >= 90) {
+        if (newY <= 15 || newY >= 85) {
           directionRef.current.y *= -1;
-          newY = Math.max(10, Math.min(90, newY));
+          directionRef.current.x += (Math.random() - 0.5) * 0.3;
+          newY = Math.max(15, Math.min(85, newY));
         }
+
+        // Clamp direction
+        directionRef.current.x = Math.max(-1.5, Math.min(1.5, directionRef.current.x));
+        directionRef.current.y = Math.max(-1.5, Math.min(1.5, directionRef.current.y));
 
         return { x: newX, y: newY };
       });
+
+      // Pulse scale effect (subtle)
+      if (frameCount % 2 === 0) {
+        setLogoScale(prev => {
+          let newScale = prev + scaleDirectionRef.current * 0.002;
+          if (newScale >= 1.08 || newScale <= 0.92) {
+            scaleDirectionRef.current *= -1;
+          }
+          return Math.max(0.92, Math.min(1.08, newScale));
+        });
+      }
+
+      // Subtle rotation
+      setLogoRotation(prev => (prev + 0.05) % 360);
+
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -64,7 +94,6 @@ const ScreensaverOverlay = ({
       setPin(newPin);
       setError('');
       
-      // Auto-verify when PIN reaches expected length (4-6 digits)
       if (newPin.length >= 4) {
         verifyPin(newPin);
       }
@@ -99,30 +128,102 @@ const ScreensaverOverlay = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-black cursor-pointer"
+      className="fixed inset-0 z-[9999] bg-black cursor-pointer overflow-hidden"
       onClick={!showPinPad ? handleScreenClick : undefined}
     >
-      {/* Animated Logo */}
+      {/* Animated TSRID Logo */}
       {!showPinPad && (
         <div 
-          className="absolute transition-all duration-100 ease-linear"
+          className="absolute transition-none"
           style={{ 
             left: `${logoPosition.x}%`, 
             top: `${logoPosition.y}%`,
-            transform: 'translate(-50%, -50%)'
+            transform: `translate(-50%, -50%) scale(${logoScale})`
           }}
         >
           <div className="text-center">
-            {logoUrl ? (
-              <img src={logoUrl} alt="Logo" className="h-24 w-auto mx-auto mb-4 opacity-50" />
-            ) : (
-              <Shield className="w-24 h-24 text-red-600/50 mx-auto mb-4" />
-            )}
-            <div className="text-white/30 text-xl font-bold">{stationName}</div>
-            <div className="text-white/20 text-sm mt-2">Bildschirm berühren zum Entsperren</div>
+            {/* TSRID Logo */}
+            <div className="mb-6">
+              <svg 
+                viewBox="0 0 200 200" 
+                className="w-40 h-40 mx-auto"
+                style={{ 
+                  filter: 'drop-shadow(0 0 20px rgba(213, 12, 45, 0.5))',
+                  transform: `rotate(${Math.sin(logoRotation * 0.02) * 3}deg)`
+                }}
+              >
+                {/* Shield background */}
+                <path 
+                  d="M100 10 L180 50 L180 110 Q180 160 100 190 Q20 160 20 110 L20 50 Z" 
+                  fill="rgba(213, 12, 45, 0.15)"
+                  stroke="rgba(213, 12, 45, 0.6)"
+                  strokeWidth="2"
+                />
+                {/* Inner shield */}
+                <path 
+                  d="M100 25 L165 58 L165 108 Q165 150 100 175 Q35 150 35 108 L35 58 Z" 
+                  fill="rgba(213, 12, 45, 0.1)"
+                  stroke="rgba(213, 12, 45, 0.4)"
+                  strokeWidth="1"
+                />
+                {/* TSRID Text */}
+                <text 
+                  x="100" 
+                  y="95" 
+                  textAnchor="middle" 
+                  fill="#d50c2d" 
+                  fontSize="36" 
+                  fontWeight="bold"
+                  fontFamily="Arial, sans-serif"
+                >
+                  TSRID
+                </text>
+                {/* ID Verification subtitle */}
+                <text 
+                  x="100" 
+                  y="125" 
+                  textAnchor="middle" 
+                  fill="rgba(255,255,255,0.5)" 
+                  fontSize="14"
+                  fontFamily="Arial, sans-serif"
+                >
+                  ID Verification
+                </text>
+                {/* Scanning lines animation effect */}
+                <line 
+                  x1="50" y1="145" x2="150" y2="145" 
+                  stroke="rgba(213, 12, 45, 0.3)" 
+                  strokeWidth="2"
+                  strokeDasharray="10,5"
+                />
+              </svg>
+            </div>
+            
+            {/* Station Info */}
+            <div className="space-y-2">
+              {stationCode && (
+                <div className="text-red-500/80 text-2xl font-bold tracking-wider">
+                  {stationCode}
+                </div>
+              )}
+              <div className="text-white/40 text-lg font-medium">
+                {stationName}
+              </div>
+              <div className="text-white/20 text-sm mt-4 animate-pulse">
+                Bildschirm berühren zum Entsperren
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Subtle background animation - moving gradient */}
+      <div 
+        className="absolute inset-0 opacity-10 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at ${logoPosition.x}% ${logoPosition.y}%, rgba(213, 12, 45, 0.3) 0%, transparent 50%)`
+        }}
+      />
 
       {/* PIN Pad Overlay */}
       {showPinPad && (
@@ -134,7 +235,9 @@ const ScreensaverOverlay = ({
             <div className="text-center mb-6">
               <Lock className="w-12 h-12 text-red-500 mx-auto mb-3" />
               <h2 className="text-white text-xl font-bold">Stations-PIN eingeben</h2>
-              <p className="text-gray-400 text-sm mt-1">Zum Entsperren</p>
+              {stationCode && (
+                <p className="text-red-500/80 text-sm mt-1 font-mono">{stationCode}</p>
+              )}
             </div>
 
             {/* PIN Display */}
@@ -142,9 +245,9 @@ const ScreensaverOverlay = ({
               {[0, 1, 2, 3, 4, 5].map((i) => (
                 <div 
                   key={i}
-                  className={`w-4 h-4 rounded-full border-2 ${
+                  className={`w-4 h-4 rounded-full border-2 transition-all ${
                     i < pin.length 
-                      ? 'bg-red-500 border-red-500' 
+                      ? 'bg-red-500 border-red-500 scale-110' 
                       : 'border-gray-500'
                   }`}
                 />
@@ -162,7 +265,7 @@ const ScreensaverOverlay = ({
                 <button
                   key={digit}
                   onClick={() => handlePinInput(String(digit))}
-                  className="bg-gray-800 hover:bg-gray-700 text-white text-2xl font-bold py-4 rounded-lg transition-colors"
+                  className="bg-gray-800 hover:bg-gray-700 active:bg-red-900/50 text-white text-2xl font-bold py-4 rounded-lg transition-colors"
                 >
                   {digit}
                 </button>
@@ -175,7 +278,7 @@ const ScreensaverOverlay = ({
               </button>
               <button
                 onClick={() => handlePinInput('0')}
-                className="bg-gray-800 hover:bg-gray-700 text-white text-2xl font-bold py-4 rounded-lg transition-colors"
+                className="bg-gray-800 hover:bg-gray-700 active:bg-red-900/50 text-white text-2xl font-bold py-4 rounded-lg transition-colors"
               >
                 0
               </button>
