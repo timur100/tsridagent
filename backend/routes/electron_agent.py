@@ -687,251 +687,83 @@ async def notify_build_complete(notification: BuildNotify):
             "version": notification.version.lstrip('v'),
             "platform": platform,
             "artifact_url": f"{notification.release_url.replace('/tag/', '/download/')}/{filename}",
-            "artifact_filename": filename,
-            "release_url": notification.release_url,
             "is_stable": True,
             "download_count": 0,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "created_by": "github-actions"
         }
-        
         builds_collection.insert_one(doc)
         created_builds.append({k: v for k, v in doc.items() if k != "_id"})
     
-    # Also create a version entry if it doesn't exist
-    version_num = notification.version.lstrip('v')
-    existing = versions_collection.find_one({"version": version_num})
-    if not existing:
-        versions_collection.insert_one({
-            "version_id": str(uuid.uuid4()),
-            "version": version_num,
-            "platform": "all",
-            "release_notes": f"Auto-created from GitHub release {notification.version}",
-            "is_mandatory": False,
-            "is_preview": False,
-            "download_count": 0,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": "github-actions"
-        })
-    
-    logger.info(f"Build notification received for {notification.version}: {len(created_builds)} artifacts")
-    
-    return {
-        "success": True,
-        "builds": created_builds,
-        "version": version_num
-    }
-
-
-@router.delete("/builds/{build_id}")
-async def delete_build(build_id: str):
-    """Delete a build"""
-    result = builds_collection.delete_one({"build_id": build_id})
-    
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Build not found")
-    
-    return {
-        "success": True,
-        "message": "Build deleted"
-    }
-
-
-# Manual build registration for testing
-@router.post("/builds/manual")
-async def register_manual_build(
-    version: str,
-    platform: str,
-    download_url: str,
-    release_notes: str = ""
-):
-    """Manually register a build for testing purposes"""
-    doc = {
-        "build_id": str(uuid.uuid4()),
-        "version": version,
-        "platform": platform,
-        "artifact_url": download_url,
-        "release_notes": release_notes,
-        "is_stable": True,
-        "download_count": 0,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "created_by": "manual"
-    }
-    
-    builds_collection.insert_one(doc)
-    
-    return {
-        "success": True,
-        "build": {k: v for k, v in doc.items() if k != "_id"}
-    }
-
+    return {"success": True, "builds": created_builds}
 
 # =====================================
-# DIRECT FILE DOWNLOAD ENDPOINT
+# DOWNLOAD PAGE ENDPOINT
 # =====================================
-
-@router.get("/file/{platform}")
-async def download_file(platform: str):
-    """Serve download file with proper headers to force download"""
-    
-    # Map platform to filename - use application/octet-stream to force download
-    file_map = {
-        "win": "TSRID.Agent.Setup.exe",
-        "windows": "TSRID.Agent.Setup.exe",
-        "mac": "TSRID.Agent.dmg",
-        "macos": "TSRID.Agent.dmg",
-        "linux": "TSRID.Agent.AppImage",
-    }
-    
-    platform_lower = platform.lower()
-    if platform_lower not in file_map:
-        raise HTTPException(status_code=400, detail=f"Invalid platform: {platform}")
-    
-    filename = file_map[platform_lower]
-    
-    # Path to the file - use latest version
-    file_path = Path("/app/frontend/public/downloads/v1.0.3") / filename
-    
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail=f"File not found: {filename}")
-    
-    # Use application/octet-stream to force browser to download instead of display
-    return FileResponse(
-        path=str(file_path),
-        filename=filename,
-        media_type="application/octet-stream",
-        headers={
-            "Content-Disposition": f'attachment; filename="{filename}"',
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0",
-            "X-Content-Type-Options": "nosniff"
-        }
-    )
-
 
 from fastapi.responses import HTMLResponse
 
 @router.get("/download-page/{platform}")
 async def download_page(platform: str):
-    """HTML page that auto-starts download - bypasses iframe sandbox"""
-    
+    """HTML page with direct download link"""
     file_map = {
         "win": ("TSRID.Agent.Setup.exe", "Windows"),
-        "windows": ("TSRID.Agent.Setup.exe", "Windows"),
         "mac": ("TSRID.Agent.dmg", "macOS"),
-        "macos": ("TSRID.Agent.dmg", "macOS"),
         "linux": ("TSRID.Agent.AppImage", "Linux"),
     }
     
     platform_lower = platform.lower()
     if platform_lower not in file_map:
-        raise HTTPException(status_code=400, detail=f"Invalid platform: {platform}")
+        raise HTTPException(status_code=400, detail=f"Invalid platform")
     
     filename, platform_name = file_map[platform_lower]
-    download_url = f"/api/electron-agent/file/{platform_lower}"
+    direct_url = f"/downloads/v1.0.3/{filename}"
     
-    html_content = f"""
-    <!DOCTYPE html>
-    <html lang="de">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TSRID Agent Download - {platform_name}</title>
-        <style>
-            body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-                color: white;
-                min-height: 100vh;
-                margin: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }}
-            .container {{
-                text-align: center;
-                padding: 40px;
-                background: rgba(0,0,0,0.5);
-                border-radius: 16px;
-                border: 1px solid #333;
-            }}
-            h1 {{
-                color: #d50c2d;
-                margin-bottom: 20px;
-            }}
-            .filename {{
-                font-family: monospace;
-                background: #333;
-                padding: 10px 20px;
-                border-radius: 8px;
-                margin: 20px 0;
-                display: inline-block;
-            }}
-            .spinner {{
-                width: 50px;
-                height: 50px;
-                border: 4px solid #333;
-                border-top-color: #d50c2d;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-                margin: 20px auto;
-            }}
-            @keyframes spin {{
-                to {{ transform: rotate(360deg); }}
-            }}
-            .manual-link {{
-                margin-top: 30px;
-                padding-top: 20px;
-                border-top: 1px solid #333;
-            }}
-            a {{
-                color: #4ade80;
-                text-decoration: none;
-            }}
-            a:hover {{
-                text-decoration: underline;
-            }}
-            .success {{
-                color: #4ade80;
-                font-size: 24px;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>TSRID Agent Download</h1>
-            <p>Plattform: <strong>{platform_name}</strong></p>
-            <div class="filename">{filename}</div>
-            <div class="spinner" id="spinner"></div>
-            <p id="status">Download wird gestartet...</p>
-            <div class="manual-link">
-                <p>Falls der Download nicht automatisch startet:</p>
-                <a href="{download_url}" download="{filename}" id="download-link">
-                    Hier klicken zum manuellen Download
-                </a>
-            </div>
-        </div>
-        <script>
-            // Auto-start download after page loads
-            window.onload = function() {{
-                setTimeout(function() {{
-                    // Create invisible link and click it
-                    var link = document.createElement('a');
-                    link.href = '{download_url}';
-                    link.download = '{filename}';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    // Update UI
-                    document.getElementById('spinner').style.display = 'none';
-                    document.getElementById('status').innerHTML = '<span class="success">✓</span> Download gestartet!<br><small>Sie können dieses Fenster schließen.</small>';
-                }}, 500);
-            }};
-        </script>
-    </body>
-    </html>
-    """
+    html = f'''<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>TSRID Agent - {platform_name}</title>
+<meta http-equiv="refresh" content="1;url={direct_url}">
+<style>
+body{{font-family:system-ui;background:#1a1a1a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}}
+.box{{text-align:center;background:#222;padding:40px;border-radius:12px}}
+h1{{color:#d50c2d}}
+.btn{{display:inline-block;background:#4ade80;color:#000;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold}}
+</style>
+</head><body>
+<div class="box">
+<h1>TSRID Agent</h1>
+<p>{platform_name} - {filename}</p>
+<p>Download startet...</p>
+<a href="{direct_url}" download class="btn">Manueller Download</a>
+</div>
+</body></html>'''
     
-    return HTMLResponse(content=html_content)
+    return HTMLResponse(content=html)
+
+
+@router.get("/file/{platform}")
+async def download_file(platform: str):
+    """Direct file download endpoint"""
+    file_map = {
+        "win": "TSRID.Agent.Setup.exe",
+        "mac": "TSRID.Agent.dmg", 
+        "linux": "TSRID.Agent.AppImage",
+    }
+    
+    platform_lower = platform.lower()
+    if platform_lower not in file_map:
+        raise HTTPException(status_code=400, detail=f"Invalid platform")
+    
+    filename = file_map[platform_lower]
+    file_path = Path("/app/frontend/public/downloads/v1.0.3") / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found")
+    
+    return FileResponse(
+        path=str(file_path),
+        filename=filename,
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
