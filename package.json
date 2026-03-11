@@ -1,0 +1,65 @@
+{
+  "name": "tsrid-agent",
+  "version": "1.0.0",
+  "description": "TSRID ID Verification & Device Agent",
+  "main": "main/main.js",
+  "homepage": "https://tsrid.com",
+  "author": {
+    "name": "TSRID Technologies",
+    "email": "support@tsrid.com"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder --win --mac --linux"
+  },
+  "build": {
+    "appId": "com.tsrid.agent",
+    "productName": "TSRID Agent",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main/**/*",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.business"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "assets/icon.png",
+      "category": "Office",
+      "maintainer": "support@tsrid.com"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "timur100",
+      "repo": "tsridagent"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.7",
+    "node-hid": "^3.0.0",
+    "axios": "^1.6.0",
+    "ws": "^8.14.0",
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "author": "TSR Technologies GmbH",
+  "license": "PROPRIETARY"
+}
