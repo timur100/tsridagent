@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, BarChart, Database, Users, Download, Shield, Wifi, Monitor, MapPin, Key, Save, Plus, Trash2, Clock, Timer, AlertTriangle, Upload, HardDrive, Lock, Camera, FileText, ExternalLink } from 'lucide-react';
+import { X, Settings, BarChart, Database, Users, Download, Shield, Wifi, Monitor, MapPin, Key, Save, Plus, Trash2, Clock, Timer, AlertTriangle, Upload, HardDrive, Lock, Camera, FileText, ExternalLink, RefreshCw } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -36,6 +36,13 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     autoStartEnabled: true
   });
   const [isElectronApp, setIsElectronApp] = useState(false);
+  
+  // Server configuration
+  const [serverConfig, setServerConfig] = useState({
+    currentUrl: window.location.origin,
+    customUrl: '',
+    isCustom: false
+  });
 
   // Location selection state
   const [continents, setContinents] = useState([]);
@@ -98,9 +105,28 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
               autoStartEnabled: settings.autoStartEnabled !== false,
               hasPin: settings.hasStationPin || false
             }));
+            
+            // Load server config from Electron
+            const appInfo = await window.electronAPI.getAppInfo();
+            setServerConfig({
+              currentUrl: appInfo.serverUrl || window.location.origin,
+              customUrl: '',
+              isCustom: false,
+              appVersion: appInfo.version,
+              platform: appInfo.platform
+            });
           } catch (error) {
             console.error('Error loading station settings:', error);
           }
+        } else {
+          // Browser mode - use current URL
+          setServerConfig({
+            currentUrl: window.location.origin,
+            customUrl: '',
+            isCustom: false,
+            appVersion: 'Browser',
+            platform: 'Web'
+          });
         }
       };
       checkElectron();
@@ -148,6 +174,68 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
         toast.success('Einstellungen gespeichert');
       } catch (error) {
         toast.error('Fehler beim Speichern');
+      }
+    }
+  };
+
+  // Save server URL (Electron only)
+  const saveServerUrl = async () => {
+    const newUrl = serverConfig.customUrl.trim();
+    
+    if (!newUrl) {
+      toast.error('Bitte geben Sie eine Server-URL ein');
+      return;
+    }
+    
+    // Validate URL format
+    try {
+      new URL(newUrl);
+    } catch {
+      toast.error('Ungültiges URL-Format. Beispiel: https://mein-server.de');
+      return;
+    }
+    
+    if (window.electronAPI && window.electronAPI.setConfig) {
+      try {
+        await window.electronAPI.setConfig({
+          serverUrl: newUrl,
+          appUrl: `${newUrl}/id-verification`
+        });
+        toast.success('Server-URL gespeichert. App wird neu geladen...');
+        
+        // Reload the app with new URL
+        setTimeout(() => {
+          window.location.href = `${newUrl}/id-verification`;
+        }, 1500);
+      } catch (error) {
+        toast.error('Fehler beim Speichern der Server-URL');
+      }
+    } else {
+      // Browser mode - just redirect
+      toast.success('Weiterleitung zur neuen URL...');
+      setTimeout(() => {
+        window.location.href = `${newUrl}/id-verification`;
+      }, 1000);
+    }
+  };
+
+  // Reset to default server URL
+  const resetServerUrl = async () => {
+    const defaultUrl = 'https://agent-control-desk-2.preview.emergentagent.com';
+    
+    if (window.electronAPI && window.electronAPI.setConfig) {
+      try {
+        await window.electronAPI.setConfig({
+          serverUrl: defaultUrl,
+          appUrl: `${defaultUrl}/id-verification`
+        });
+        toast.success('Server-URL zurückgesetzt. App wird neu geladen...');
+        
+        setTimeout(() => {
+          window.location.href = `${defaultUrl}/id-verification`;
+        }, 1500);
+      } catch (error) {
+        toast.error('Fehler beim Zurücksetzen');
       }
     }
   };
@@ -350,7 +438,8 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
       icon: Shield,
       subItems: [
         { id: 'station-pin', label: 'Stations-PIN', icon: Lock },
-        { id: 'screensaver', label: 'Bildschirmschoner', icon: Timer }
+        { id: 'screensaver', label: 'Bildschirmschoner', icon: Timer },
+        { id: 'server-config', label: 'Server-Verbindung', icon: Wifi }
       ]
     },
     admin: {
@@ -1629,6 +1718,128 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                     Einstellungen speichern
                   </Button>
                 </>
+              )}
+            </div>
+          )}
+
+          {/* Server Configuration Tab */}
+          {activeTab === 'server-config' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">Server-Verbindung</h2>
+                  <p className="text-muted-foreground">Aktueller Server und Konfiguration</p>
+                </div>
+              </div>
+
+              {/* Current Connection Status */}
+              <Card className="p-6 border-2 border-green-500/50 bg-green-500/10">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Wifi className="h-5 w-5 text-green-500" />
+                  Aktuelle Verbindung
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                    <span className="text-muted-foreground">Server-URL:</span>
+                    <span className="font-mono text-green-400 text-sm break-all">{serverConfig.currentUrl}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                    <span className="text-muted-foreground">App-Version:</span>
+                    <span className="font-mono text-foreground">{serverConfig.appVersion || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                    <span className="text-muted-foreground">Plattform:</span>
+                    <span className="font-mono text-foreground">{serverConfig.platform || 'Web'}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                    <span className="text-muted-foreground">Status:</span>
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
+                      <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                      Verbunden
+                    </Badge>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Custom Server Configuration */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <HardDrive className="h-5 w-5" />
+                  Eigener Server (Produktivbetrieb)
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Wenn Sie die App mit einem eigenen Server betreiben möchten, geben Sie hier die URL ein.
+                  Die App wird nach dem Speichern automatisch neu geladen.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Server-URL
+                    </label>
+                    <input
+                      type="url"
+                      value={serverConfig.customUrl}
+                      onChange={(e) => setServerConfig({ ...serverConfig, customUrl: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground font-mono text-sm"
+                      placeholder="https://mein-server.de"
+                    />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Beispiel: https://tsrid.meine-firma.de
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button onClick={saveServerUrl} className="gap-2">
+                      <Save className="h-4 w-4" />
+                      Server-URL speichern
+                    </Button>
+                    {isElectronApp && (
+                      <Button onClick={resetServerUrl} variant="outline" className="gap-2">
+                        <RefreshCw className="h-4 w-4" />
+                        Zurücksetzen
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Quick Links */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <ExternalLink className="h-5 w-5" />
+                  Schnellzugriff
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    variant="outline" 
+                    className="justify-start gap-2"
+                    onClick={() => window.open(`${serverConfig.currentUrl}/portal/admin`, '_blank')}
+                  >
+                    <Monitor className="h-4 w-4" />
+                    Admin-Portal öffnen
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="justify-start gap-2"
+                    onClick={() => window.open(`${serverConfig.currentUrl}/api/docs`, '_blank')}
+                  >
+                    <FileText className="h-4 w-4" />
+                    API-Dokumentation
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Development Info */}
+              {!isElectronApp && (
+                <Card className="p-6 border border-blue-500/50 bg-blue-500/10">
+                  <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-blue-500" />
+                    Entwicklungsmodus
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Sie verwenden die App im Browser. Für den vollständigen Funktionsumfang 
+                    (Kiosk-Modus, Autostart, Offline-Fähigkeit) installieren Sie den TSRID Agent Desktop-Client.
+                  </p>
+                </Card>
               )}
             </div>
           )}

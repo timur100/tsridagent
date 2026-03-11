@@ -163,8 +163,31 @@ ipcMain.handle('get-app-info', () => {
     tenantId: store.get('tenantId'),
     locationCode: store.get('locationCode'),
     serverUrl: store.get('serverUrl'),
+    appUrl: store.get('appUrl'),
     kioskMode: isKioskMode
   };
+});
+
+// Set configuration (server URL, etc.)
+ipcMain.handle('set-config', (event, config) => {
+  if (config.serverUrl !== undefined) {
+    store.set('serverUrl', config.serverUrl);
+  }
+  if (config.appUrl !== undefined) {
+    store.set('appUrl', config.appUrl);
+  }
+  if (config.deviceId !== undefined) {
+    store.set('deviceId', config.deviceId);
+  }
+  if (config.tenantId !== undefined) {
+    store.set('tenantId', config.tenantId);
+  }
+  if (config.locationCode !== undefined) {
+    store.set('locationCode', config.locationCode);
+  }
+  
+  console.log('Configuration updated:', config);
+  return { success: true };
 });
 
 // Toggle kiosk mode (hidden button trigger)
