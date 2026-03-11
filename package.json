@@ -1,6 +1,6 @@
 {
   "name": "tsrid-agent",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "TSRID ID Verification & Device Agent",
   "main": "main/main.js",
   "homepage": "https://tsrid.com",
