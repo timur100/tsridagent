@@ -198,3 +198,7 @@ frontend/public/downloads/tsrid-agent-1.0.0-linux.AppImage
 electron-agent/dist/linux-arm64-unpacked/tsrid-agent
 electron-agent/dist/TSRID
 Agent-1.0.0-arm64.AppImage
+-e 
+# Environment files
+*.env
+*.env.*
