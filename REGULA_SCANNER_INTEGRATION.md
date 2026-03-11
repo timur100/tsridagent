@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://electron-regula-hub.preview.emergentagent.com/portal/admin/id-checks
+   https://agent-control-desk-2.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

@@ -24,6 +24,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   registerDevice: (data) => ipcRenderer.invoke('register-device', data),
   sendHeartbeat: () => ipcRenderer.invoke('send-heartbeat'),
   
+  // Kiosk Mode
+  toggleKioskMode: () => ipcRenderer.invoke('toggle-kiosk-mode'),
+  getKioskMode: () => ipcRenderer.invoke('get-kiosk-mode'),
+  
   // Platform info
   platform: process.platform,
   arch: process.arch

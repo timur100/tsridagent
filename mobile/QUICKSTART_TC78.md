@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://electron-regula-hub.preview.emergentagent.com`
+`https://agent-control-desk-2.preview.emergentagent.com`
 
 ---
 

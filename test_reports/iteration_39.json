@@ -73,7 +73,7 @@
     }
   },
   "navigation_path": {
-    "step1": "Open https://electron-regula-hub.preview.emergentagent.com/portal/admin",
+    "step1": "Open https://agent-control-desk-2.preview.emergentagent.com/portal/admin",
     "step2": "Login with admin@tsrid.com / admin123",
     "step3": "Click 'Agent' tab in top navigation",
     "step4": "Click on any device card (e.g., CGNE01-01)",

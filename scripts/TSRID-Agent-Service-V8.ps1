@@ -2,7 +2,7 @@
 # TSRID Agent Service V8 - ECHTZEIT REMOTE CONTROL
 # ============================================================================
 
-$API = "https://electron-regula-hub.preview.emergentagent.com/api/device-agent"
+$API = "https://agent-control-desk-2.preview.emergentagent.com/api/device-agent"
 $HEARTBEAT_INTERVAL = 60
 $COMMAND_CHECK_INTERVAL = 5  # Alle 5 Sekunden nach Befehlen fragen
 $LOG = "C:\TSRID\agent.log"

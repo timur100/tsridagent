@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Check, Lock, AlertTriangle, X, RefreshCw, Menu, Monitor, Upload, FileText, Scan } from 'lucide-react';
+import { Check, Lock, AlertTriangle, X, RefreshCw, Menu, Monitor, Upload, FileText, Scan, Maximize2, Minimize2 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import toast from 'react-hot-toast';
@@ -163,6 +163,11 @@ const VerificationInterface = () => {
   const [verificationHistory, setVerificationHistory] = useState([]);
   const [infoMessages, setInfoMessages] = useState([]);
   const [unknownScanCount, setUnknownScanCount] = useState(0); // Track consecutive unknown scans
+  
+  // Kiosk Mode State (für Electron)
+  const [isKioskMode, setIsKioskMode] = useState(true);
+  const [kioskToggleClicks, setKioskToggleClicks] = useState(0);
+  const kioskToggleTimeoutRef = useRef(null);
   const [securityUsers, setSecurityUsers] = useState([
     { id: 0, employeeNumber: '00', name: 'Administrator', pin: '1234', role: 'Admin' },
     { id: 1, employeeNumber: '01', name: 'Max Müller', pin: '1111', role: 'Security' },
@@ -798,6 +803,7 @@ const VerificationInterface = () => {
   useEffect(() => {
     checkScannerStatus();
     loadPdfMappings();
+    checkKioskMode(); // Check kiosk mode on mount
     // Check scanner status every 30 seconds
     const interval = setInterval(checkScannerStatus, 30000);
     
@@ -812,6 +818,58 @@ const VerificationInterface = () => {
       window.removeEventListener('focus', handleFocus);
     };
   }, []);
+
+  // Check and set kiosk mode status from Electron
+  const checkKioskMode = async () => {
+    if (window.electronAPI && window.electronAPI.getKioskMode) {
+      try {
+        const result = await window.electronAPI.getKioskMode();
+        setIsKioskMode(result.kioskMode);
+      } catch (error) {
+        console.error('Error checking kiosk mode:', error);
+      }
+    }
+  };
+
+  // Hidden kiosk toggle - requires 5 rapid clicks in the hidden area
+  const handleHiddenKioskToggle = async () => {
+    // Clear existing timeout
+    if (kioskToggleTimeoutRef.current) {
+      clearTimeout(kioskToggleTimeoutRef.current);
+    }
+    
+    const newClickCount = kioskToggleClicks + 1;
+    setKioskToggleClicks(newClickCount);
+    
+    // Reset after 2 seconds of no clicks
+    kioskToggleTimeoutRef.current = setTimeout(() => {
+      setKioskToggleClicks(0);
+    }, 2000);
+    
+    // Toggle after 5 rapid clicks
+    if (newClickCount >= 5) {
+      setKioskToggleClicks(0);
+      
+      if (window.electronAPI && window.electronAPI.toggleKioskMode) {
+        try {
+          const result = await window.electronAPI.toggleKioskMode();
+          setIsKioskMode(result.kioskMode);
+          
+          if (result.kioskMode) {
+            toast.success('Vollbildmodus aktiviert', { duration: 2000 });
+          } else {
+            toast.success('Vollbildmodus deaktiviert - Fensterleiste sichtbar', { duration: 2000 });
+          }
+        } catch (error) {
+          console.error('Error toggling kiosk mode:', error);
+          toast.error('Fehler beim Umschalten des Vollbildmodus');
+        }
+      } else {
+        // Not running in Electron - show info
+        toast('Vollbildmodus nur in der Desktop-App verfügbar', { icon: 'ℹ️', duration: 2000 });
+      }
+    }
+  };
 
   // Load PDF mappings from backend
   const loadPdfMappings = async () => {
@@ -1581,6 +1639,34 @@ const VerificationInterface = () => {
         securityUser={securityUser}
         scannerOnline={scannerOnline}
       />
+      
+      {/* Hidden Kiosk Toggle Button - positioned in bottom right corner */}
+      {/* Requires 5 rapid clicks to activate/deactivate fullscreen mode */}
+      <div 
+        onClick={handleHiddenKioskToggle}
+        className="fixed bottom-2 right-2 w-12 h-12 cursor-default z-50 opacity-0 hover:opacity-10 transition-opacity"
+        title={kioskToggleClicks > 0 ? `${5 - kioskToggleClicks} Klicks verbleibend` : ''}
+      >
+        {/* Visual hint only shown when clicking sequence starts */}
+        {kioskToggleClicks > 0 && (
+          <div className="w-full h-full rounded-lg bg-white/20 flex items-center justify-center">
+            <span className="text-white text-xs font-bold">{5 - kioskToggleClicks}</span>
+          </div>
+        )}
+      </div>
+      
+      {/* Kiosk Mode Indicator (visible only in non-kiosk mode for awareness) */}
+      {window.isElectron && !isKioskMode && (
+        <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-40">
+          <div 
+            onClick={handleHiddenKioskToggle}
+            className="bg-blue-500/80 text-white px-3 py-1 rounded-full text-xs flex items-center gap-2 cursor-pointer hover:bg-blue-600/80 transition-colors"
+          >
+            <Maximize2 className="w-3 h-3" />
+            <span>5x Klick für Vollbild</span>
+          </div>
+        </div>
+      )}
       
       {/* Modals */}
       <ImageModal 

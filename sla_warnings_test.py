@@ -14,7 +14,7 @@ from typing import Dict, Any
 import jwt
 
 # Backend URL from environment
-BACKEND_URL = "https://electron-regula-hub.preview.emergentagent.com"
+BACKEND_URL = "https://agent-control-desk-2.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class SLAWarningsDebugTester:

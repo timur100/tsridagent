@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://electron-regula-hub.preview.emergentagent.com/portal/admin
+https://agent-control-desk-2.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://electron-regula-hub.preview.emergentagent.com/portal/admin
+**URL:** https://agent-control-desk-2.preview.emergentagent.com/portal/admin

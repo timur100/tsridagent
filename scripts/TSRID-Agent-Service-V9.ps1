@@ -3,7 +3,7 @@
 # Fuer Windows-Tablets zur Remote-Steuerung
 
 param(
-    [string]$ApiUrl = "https://electron-regula-hub.preview.emergentagent.com",
+    [string]$ApiUrl = "https://agent-control-desk-2.preview.emergentagent.com",
     [int]$HeartbeatInterval = 60,
     [int]$CommandPollInterval = 5
 )

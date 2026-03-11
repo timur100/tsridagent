@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, globalShortcut, screen } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const Store = require('electron-store');
@@ -6,18 +6,20 @@ const Store = require('electron-store');
 // Configuration store
 const store = new Store({
   defaults: {
-    serverUrl: 'https://electron-regula-hub.preview.emergentagent.com',
-    appUrl: 'https://electron-regula-hub.preview.emergentagent.com/id-verification',
+    serverUrl: 'https://agent-control-desk-2.preview.emergentagent.com',
+    appUrl: 'https://agent-control-desk-2.preview.emergentagent.com/id-verification',
     deviceId: null,
     tenantId: null,
     locationCode: null,
     autoUpdate: true,
-    lastVersion: '1.0.0'
+    lastVersion: '1.0.0',
+    kioskMode: true  // Start in kiosk mode by default
   }
 });
 
 let mainWindow;
 let isDev = process.argv.includes('--dev');
+let isKioskMode = store.get('kioskMode', true);
 
 // Disable security warnings in dev mode
 if (isDev) {
@@ -25,9 +27,11 @@ if (isDev) {
 }
 
 function createWindow() {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  
   mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: width,
+    height: height,
     minWidth: 1280,
     minHeight: 720,
     webPreferences: {
@@ -37,12 +41,19 @@ function createWindow() {
     },
     icon: path.join(__dirname, '../assets/icon.png'),
     title: 'TSRID Agent',
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    // Kiosk mode settings
+    fullscreen: isKioskMode,
+    kiosk: isKioskMode,
+    frame: !isKioskMode,  // Hide window frame in kiosk mode
+    alwaysOnTop: isKioskMode,
+    skipTaskbar: isKioskMode
   });
 
   // Load the web app URL
   const appUrl = store.get('appUrl');
   console.log(`Loading app URL: ${appUrl}`);
+  console.log(`Kiosk mode: ${isKioskMode}`);
   mainWindow.loadURL(appUrl);
 
   // Open DevTools in dev mode
@@ -52,6 +63,14 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+  
+  // Prevent Alt+F4 and other close shortcuts in kiosk mode
+  mainWindow.on('close', (e) => {
+    if (isKioskMode && !app.isQuitting) {
+      e.preventDefault();
+      return false;
+    }
   });
 }
 
@@ -136,8 +155,40 @@ ipcMain.handle('get-app-info', () => {
     deviceId: store.get('deviceId'),
     tenantId: store.get('tenantId'),
     locationCode: store.get('locationCode'),
-    serverUrl: store.get('serverUrl')
+    serverUrl: store.get('serverUrl'),
+    kioskMode: isKioskMode
   };
+});
+
+// Toggle kiosk mode (hidden button trigger)
+ipcMain.handle('toggle-kiosk-mode', () => {
+  isKioskMode = !isKioskMode;
+  store.set('kioskMode', isKioskMode);
+  
+  if (mainWindow) {
+    if (isKioskMode) {
+      // Enter kiosk mode
+      mainWindow.setKiosk(true);
+      mainWindow.setFullScreen(true);
+      mainWindow.setAlwaysOnTop(true);
+      mainWindow.setSkipTaskbar(true);
+      console.log('Kiosk mode activated');
+    } else {
+      // Exit kiosk mode
+      mainWindow.setKiosk(false);
+      mainWindow.setFullScreen(false);
+      mainWindow.setAlwaysOnTop(false);
+      mainWindow.setSkipTaskbar(false);
+      console.log('Kiosk mode deactivated');
+    }
+  }
+  
+  return { kioskMode: isKioskMode };
+});
+
+// Get kiosk mode status
+ipcMain.handle('get-kiosk-mode', () => {
+  return { kioskMode: isKioskMode };
 });
 
 // Set configuration
@@ -179,9 +230,43 @@ ipcMain.handle('trigger-scan', async (event, options) => {
 // =====================================
 // APP LIFECYCLE
 // =====================================
+
+// Flag for clean quit
+app.isQuitting = false;
+
 app.whenReady().then(() => {
   createWindow();
   setupAutoUpdater();
+  
+  // Register secret keyboard shortcut to toggle kiosk mode (Ctrl+Shift+K)
+  globalShortcut.register('CommandOrControl+Shift+K', () => {
+    isKioskMode = !isKioskMode;
+    store.set('kioskMode', isKioskMode);
+    
+    if (mainWindow) {
+      if (isKioskMode) {
+        mainWindow.setKiosk(true);
+        mainWindow.setFullScreen(true);
+        mainWindow.setAlwaysOnTop(true);
+        mainWindow.setSkipTaskbar(true);
+        console.log('Kiosk mode activated via shortcut');
+      } else {
+        mainWindow.setKiosk(false);
+        mainWindow.setFullScreen(false);
+        mainWindow.setAlwaysOnTop(false);
+        mainWindow.setSkipTaskbar(false);
+        console.log('Kiosk mode deactivated via shortcut');
+      }
+    }
+  });
+  
+  // Register quit shortcut (Ctrl+Shift+Q) - only works when not in kiosk mode or with special sequence
+  globalShortcut.register('CommandOrControl+Shift+Q', () => {
+    if (!isKioskMode) {
+      app.isQuitting = true;
+      app.quit();
+    }
+  });
 
   // macOS: Re-create window when dock icon clicked
   app.on('activate', () => {

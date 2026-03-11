@@ -79,7 +79,7 @@ function makeRequest(url, method, data = null, headers = {}) {
  * Holt die Server-URL aus der Konfiguration
  */
 function getServerUrl() {
-    return database.getConfig('server_url', 'https://electron-regula-hub.preview.emergentagent.com');
+    return database.getConfig('server_url', 'https://agent-control-desk-2.preview.emergentagent.com');
 }
 
 /**
