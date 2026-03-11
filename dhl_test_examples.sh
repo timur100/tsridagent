@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DHL Sandbox Testing Script
-API_URL="https://agent-control-desk-2.preview.emergentagent.com/api/dhl"
+API_URL="https://tsrid-agent-platform.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sandbox Testing ==="
 echo ""

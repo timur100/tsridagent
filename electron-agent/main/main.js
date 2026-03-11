@@ -6,8 +6,8 @@ const Store = require('electron-store');
 // Configuration store
 const store = new Store({
   defaults: {
-    serverUrl: 'https://agent-control-desk-2.preview.emergentagent.com',
-    appUrl: 'https://agent-control-desk-2.preview.emergentagent.com/id-verification',
+    serverUrl: 'https://tsrid-agent-platform.preview.emergentagent.com',
+    appUrl: 'https://tsrid-agent-platform.preview.emergentagent.com/id-verification',
     deviceId: null,
     tenantId: null,
     locationCode: null,
@@ -309,17 +309,48 @@ ipcMain.handle('install-update', () => {
   }
 });
 
-// Get scanner status (will be implemented with Regula SDK)
-ipcMain.handle('get-scanner-status', async () => {
+// =====================================
+// SCANNER HANDLERS (Regula SDK via electron-edge-js)
+// =====================================
+
+// Importiere den RegulaScanner nur auf Windows
+let regulaScanner = null;
+if (process.platform === 'win32') {
   try {
-    const { regulaClient } = require('./regulaClient');
-    const status = await regulaClient.checkService();
+    const { regulaScanner: scanner } = require('./regulaScanner');
+    regulaScanner = scanner;
+    console.log('[Main] RegulaScanner geladen');
+  } catch (error) {
+    console.warn('[Main] RegulaScanner konnte nicht geladen werden:', error.message);
+  }
+}
+
+// Get scanner status
+ipcMain.handle('get-scanner-status', async () => {
+  // Auf Nicht-Windows Systemen: Simulation
+  if (!regulaScanner) {
     return {
-      available: true,
-      connected: status.scanner?.connected || false,
-      initialized: status.scanner?.initialized || false,
-      scanInProgress: status.scanner?.scanInProgress || false,
-      serviceRunning: true
+      available: false,
+      connected: false,
+      initialized: false,
+      scanInProgress: false,
+      platform: process.platform,
+      error: process.platform !== 'win32' 
+        ? 'Scanner nur auf Windows verfügbar' 
+        : 'Scanner-Modul nicht geladen'
+    };
+  }
+
+  try {
+    const status = await regulaScanner.getStatus();
+    return {
+      available: status.available || false,
+      connected: status.connected || false,
+      initialized: status.initialized || false,
+      scanInProgress: false,
+      installedComponents: status.installedComponents || [],
+      lastError: status.lastError,
+      platform: process.platform
     };
   } catch (error) {
     return {
@@ -327,18 +358,25 @@ ipcMain.handle('get-scanner-status', async () => {
       connected: false,
       initialized: false,
       scanInProgress: false,
-      serviceRunning: false,
-      error: error.message
+      error: error.message,
+      platform: process.platform
     };
   }
 });
 
 // Connect scanner
 ipcMain.handle('connect-scanner', async () => {
+  if (!regulaScanner) {
+    return { 
+      success: false, 
+      error: 'Scanner-Modul nicht verfügbar',
+      platform: process.platform
+    };
+  }
+
   try {
-    const { regulaClient } = require('./regulaClient');
-    const result = await regulaClient.connect();
-    return { success: true, ...result };
+    const result = await regulaScanner.connect();
+    return result;
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -346,10 +384,13 @@ ipcMain.handle('connect-scanner', async () => {
 
 // Disconnect scanner
 ipcMain.handle('disconnect-scanner', async () => {
+  if (!regulaScanner) {
+    return { success: true, message: 'Nicht verbunden' };
+  }
+
   try {
-    const { regulaClient } = require('./regulaClient');
-    const result = await regulaClient.disconnect();
-    return { success: true, ...result };
+    const result = await regulaScanner.disconnect();
+    return result;
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -357,10 +398,21 @@ ipcMain.handle('disconnect-scanner', async () => {
 
 // Trigger scan
 ipcMain.handle('trigger-scan', async (event, options) => {
+  if (!regulaScanner) {
+    return { 
+      success: false, 
+      error: 'Scanner nicht verfügbar',
+      platform: process.platform
+    };
+  }
+
   try {
-    const { regulaClient } = require('./regulaClient');
-    const result = await regulaClient.scan();
-    return { success: true, result };
+    const result = await regulaScanner.scan(options);
+    // Sende Ergebnis auch via Event an Renderer
+    if (result.success && mainWindow) {
+      mainWindow.webContents.send('scan-result', result);
+    }
+    return result;
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -368,10 +420,13 @@ ipcMain.handle('trigger-scan', async (event, options) => {
 
 // Get last scan result
 ipcMain.handle('get-scan-result', async () => {
+  if (!regulaScanner) {
+    return { success: false, error: 'Scanner nicht verfügbar' };
+  }
+
   try {
-    const { regulaClient } = require('./regulaClient');
-    const result = await regulaClient.getLastResult();
-    return { success: true, result };
+    const result = await regulaScanner.getLastResult();
+    return result;
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -379,10 +434,31 @@ ipcMain.handle('get-scan-result', async () => {
 
 // Get scan images
 ipcMain.handle('get-scan-images', async () => {
+  if (!regulaScanner) {
+    return { success: false, images: [] };
+  }
+
   try {
-    const { regulaClient } = require('./regulaClient');
-    const images = await regulaClient.getImages();
-    return { success: true, images };
+    const result = await regulaScanner.getImages();
+    return result;
+  } catch (error) {
+    return { success: false, error: error.message, images: [] };
+  }
+});
+
+// Get reader debug info (für Entwicklung)
+ipcMain.handle('get-scanner-debug-info', async () => {
+  if (!regulaScanner) {
+    return { 
+      success: false, 
+      error: 'Scanner nicht verfügbar',
+      platform: process.platform
+    };
+  }
+
+  try {
+    const info = await regulaScanner.getReaderInfo();
+    return info;
   } catch (error) {
     return { success: false, error: error.message };
   }

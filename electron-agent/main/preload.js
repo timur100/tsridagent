@@ -13,13 +13,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('update-status', (event, data) => callback(data));
   },
   
-  // Scanner (Regula)
+  // Scanner (Regula via electron-edge-js)
   getScannerStatus: () => ipcRenderer.invoke('get-scanner-status'),
   connectScanner: () => ipcRenderer.invoke('connect-scanner'),
   disconnectScanner: () => ipcRenderer.invoke('disconnect-scanner'),
   triggerScan: (options) => ipcRenderer.invoke('trigger-scan', options),
   getScanResult: () => ipcRenderer.invoke('get-scan-result'),
   getScanImages: () => ipcRenderer.invoke('get-scan-images'),
+  getScannerDebugInfo: () => ipcRenderer.invoke('get-scanner-debug-info'),
   onScanResult: (callback) => {
     ipcRenderer.on('scan-result', (event, data) => callback(data));
   },

@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://agent-control-desk-2.preview.emergentagent.com/portal/admin/id-checks
+   https://tsrid-agent-platform.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

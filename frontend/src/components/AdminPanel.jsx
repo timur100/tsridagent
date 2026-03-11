@@ -221,7 +221,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
 
   // Reset to default server URL
   const resetServerUrl = async () => {
-    const defaultUrl = 'https://agent-control-desk-2.preview.emergentagent.com';
+    const defaultUrl = 'https://tsrid-agent-platform.preview.emergentagent.com';
     
     if (window.electronAPI && window.electronAPI.setConfig) {
       try {

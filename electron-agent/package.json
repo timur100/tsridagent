@@ -1,13 +1,10 @@
 {
   "name": "tsrid-agent",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "TSRID ID Verification & Device Agent",
   "main": "main/main.js",
   "homepage": "https://tsrid.com",
-  "author": {
-    "name": "TSRID Technologies",
-    "email": "support@tsrid.com"
-  },
+  "author": "TSR Technologies GmbH",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
@@ -29,16 +26,24 @@
       "package.json"
     ],
     "win": {
-      "target": ["nsis", "portable"],
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "assets/icon.ico"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "assets/icon.icns",
       "category": "public.app-category.business"
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "icon": "assets/icon.png",
       "category": "Office",
       "maintainer": "support@tsrid.com"
@@ -50,16 +55,16 @@
     }
   },
   "dependencies": {
+    "axios": "^1.6.0",
+    "electron-edge-js": "^40.0.1",
+    "electron-store": "^8.1.0",
     "electron-updater": "^6.1.7",
     "node-hid": "^3.0.0",
-    "axios": "^1.6.0",
-    "ws": "^8.14.0",
-    "electron-store": "^8.1.0"
+    "ws": "^8.14.0"
   },
   "devDependencies": {
     "electron": "^28.0.0",
     "electron-builder": "^24.9.1"
   },
-  "author": "TSR Technologies GmbH",
   "license": "PROPRIETARY"
 }

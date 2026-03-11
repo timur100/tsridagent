@@ -24,7 +24,7 @@ npm start
 ```
 
 Der Agent startet und lädt automatisch die **Emergent Preview-URL**:
-`https://agent-control-desk-2.preview.emergentagent.com/id-verification`
+`https://tsrid-agent-platform.preview.emergentagent.com/id-verification`
 
 ## Konfiguration ändern
 
@@ -37,7 +37,7 @@ Die Konfiguration wird in einer JSON-Datei gespeichert:
 
 ```json
 {
-  "appUrl": "https://agent-control-desk-2.preview.emergentagent.com/id-verification",
+  "appUrl": "https://tsrid-agent-platform.preview.emergentagent.com/id-verification",
   "kioskMode": false,
   "screensaverEnabled": true,
   "screensaverTimeout": 5,

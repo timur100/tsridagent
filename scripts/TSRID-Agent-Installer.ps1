@@ -5,7 +5,7 @@
 # ANLEITUNG: In PowerShell (Administrator) einfuegen und Enter druecken
 # ============================================================
 
-$ApiUrl = "https://agent-control-desk-2.preview.emergentagent.com"
+$ApiUrl = "https://tsrid-agent-platform.preview.emergentagent.com"
 $InstallPath = "C:\TSRID-Agent"
 $ScriptPath = "$InstallPath\TSRID-Agent-Service.ps1"
 $LogPath = "$InstallPath\agent.log"
@@ -28,7 +28,7 @@ Write-Host "[3/5] Erstelle Agent-Script..." -ForegroundColor Yellow
 
 $AgentScript = @'
 # TSRID Agent Service V16
-$ApiUrl = "https://agent-control-desk-2.preview.emergentagent.com"
+$ApiUrl = "https://tsrid-agent-platform.preview.emergentagent.com"
 $LogFile = "C:\TSRID-Agent\agent.log"
 $HeartbeatInterval = 30
 

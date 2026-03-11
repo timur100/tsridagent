@@ -7,7 +7,7 @@ System für die automatische Konfiguration und Echtzeit-Überwachung einer groß
 - Station Assignment & Remote Control
 - Electron Desktop Agent für ID-Verifikation
 
-## Current Version: 1.0.5
+## Current Version: 1.0.6
 
 ---
 
@@ -24,6 +24,12 @@ System für die automatische Konfiguration und Echtzeit-Überwachung einer groß
 - **Stations-PIN**: 4-6 stellige PIN für Start und Entsperrung
 - **Server-Konfiguration**: URL änderbar für Produktivbetrieb
 - **Autostart**: Mit Windows starten (konfigurierbar)
+- **Regula Scanner Integration (v1.0.6)**:
+  - Direkte Integration via `electron-edge-js`
+  - Keine separate Bridge-Anwendung nötig
+  - Automatische Erkennung installierter COM-Komponenten
+  - Unterstützte ProgIDs: PassportReader.SDK, PassportReader.ABOREAD, etc.
+  - Debug-Funktion um verfügbare Methoden/Properties anzuzeigen
 
 ### Admin Portal
 - Station Tab mit:
@@ -31,6 +37,10 @@ System für die automatische Konfiguration und Echtzeit-Überwachung einer groß
   - Bildschirmschoner-Einstellungen
   - Server-Verbindung anzeigen/ändern
 - Test-Button für Bildschirmschoner (funktioniert auch im Browser)
+- Scanner-Manager mit:
+  - Electron-App Erkennung
+  - Regula Scanner Status/Verbindung
+  - Debug-Info Button für SDK-Analyse
 
 ### CI/CD Pipeline
 - GitHub Actions für automatische Builds
@@ -55,8 +65,8 @@ System für die automatische Konfiguration und Echtzeit-Überwachung einer groß
 ## Upcoming Tasks
 
 ### P0
-- [ ] Regula 7028M.111 Scanner Integration (node-hid)
-- [ ] Electron Agent auf eigenem Server testen
+- [x] Regula 7028M.111 Scanner Integration (electron-edge-js) - IMPLEMENTIERT v1.0.6
+- [ ] Electron Agent lokal testen mit Scanner-Hardware
 
 ### P1  
 - [ ] RustDesk Integration für Remote Control
@@ -73,17 +83,54 @@ System für die automatische Konfiguration und Echtzeit-Überwachung einer groß
 ### Electron Agent
 - `/app/electron-agent/main/main.js` - Hauptprozess
 - `/app/electron-agent/main/preload.js` - IPC Bridge
-- `/app/electron-agent/package.json` - Version 1.0.5
-- `/app/electron-agent/DEVELOPMENT.md` - Entwickler-Dokumentation
+- `/app/electron-agent/main/regulaScanner.js` - Regula SDK via electron-edge-js (NEU v1.0.6)
+- `/app/electron-agent/package.json` - Version 1.0.6
+- `/app/electron-agent/README.md` - Entwickler-Dokumentation
 
 ### Frontend Components
 - `/app/frontend/src/components/ScreensaverOverlay.jsx` - Bildschirmschoner
 - `/app/frontend/src/components/StartupPinPrompt.jsx` - PIN beim Start
 - `/app/frontend/src/components/AdminPanel.jsx` - Admin mit Station-Tab
-- `/app/frontend/public/tsrid-logo.png` - TSRID Logo
+- `/app/frontend/src/components/ScannerManager.jsx` - Scanner-Verwaltung (aktualisiert v1.0.6)
 
 ### Backend
 - `/app/backend/routes/electron_agent.py` - Build & Download API
+
+---
+
+## Technical Details - Regula Scanner Integration
+
+### Architektur (v1.0.6)
+```
+Electron App (Node.js)
+  └── regulaScanner.js
+       └── electron-edge-js
+            └── C# Code (inline)
+                 └── COM/ActiveX
+                      └── Regula SDK (PassportReader.SDK)
+                           └── Scanner Hardware (7028M.111)
+```
+
+### Voraussetzungen
+- Windows 10/11 mit .NET Framework 4.x
+- Regula Document Reader SDK installiert
+- Scanner-Treiber installiert
+- Scanner per USB verbunden
+
+### API (Electron)
+```javascript
+// Status prüfen
+await window.electronAPI.getScannerStatus()
+
+// Verbinden
+await window.electronAPI.connectScanner()
+
+// Scannen
+await window.electronAPI.triggerScan()
+
+// Debug-Info
+await window.electronAPI.getScannerDebugInfo()
+```
 
 ---
 
@@ -93,4 +140,4 @@ System für die automatische Konfiguration und Echtzeit-Überwachung einer groß
 ---
 
 ## Last Updated
-2026-03-11 - Bildschirmschoner mit Matrix-Animation implementiert
+2026-03-11 - Regula Scanner Integration via electron-edge-js implementiert (v1.0.6)
