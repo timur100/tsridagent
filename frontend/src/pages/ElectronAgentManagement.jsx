@@ -136,8 +136,14 @@ const ElectronAgentManagement = () => {
       const data = await response.json();
       
       if (data.success && data.available) {
-        // Open download URL in new tab
-        window.open(data.download_url, '_blank');
+        // Create a hidden anchor element to force download
+        const link = document.createElement('a');
+        link.href = data.download_url;
+        link.setAttribute('download', ''); // Force download
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
         toast.success(`Download für ${platform.toUpperCase()} gestartet`);
       } else {
         // Show setup instructions
