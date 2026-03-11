@@ -643,47 +643,22 @@ const ElectronAgentManagement = () => {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-xs text-gray-400">Windows 10/11 (64-bit)</div>
+                      <div className="text-xs text-gray-400">Windows 10/11 (64-bit) - 75 MB</div>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm"
-                      className={latestBuilds.win ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
-                      disabled={!latestBuilds.win || downloadLoading.win}
-                      onClick={async () => {
-                        if (latestBuilds.win) {
-                          setDownloadLoading(prev => ({...prev, win: true}));
-                          toast.success('Download wird vorbereitet...');
-                          try {
-                            const response = await fetch(latestBuilds.win.artifact_url);
-                            const blob = await response.blob();
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'TSRID.Agent.Setup.exe';
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-                            toast.success('Download gestartet!');
-                          } catch (err) {
-                            toast.error('Download fehlgeschlagen');
-                            console.error(err);
-                          } finally {
-                            setDownloadLoading(prev => ({...prev, win: false}));
-                          }
-                        }
-                      }}
-                      data-testid="download-win-exe"
-                    >
-                      {downloadLoading.win ? (
-                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                      ) : (
+                    {latestBuilds.win && (
+                      <a 
+                        href={latestBuilds.win.artifact_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
+                        data-testid="download-win-exe"
+                      >
                         <Download className="w-4 h-4 mr-1" />
-                      )}
-                      .exe
-                    </Button>
+                        .exe herunterladen
+                      </a>
+                    )}
                   </div>
                 </div>
 
@@ -702,46 +677,22 @@ const ElectronAgentManagement = () => {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-xs text-gray-400">macOS 11+ (Intel & Apple Silicon)</div>
+                      <div className="text-xs text-gray-400">macOS 11+ (Intel & Apple Silicon) - 93 MB</div>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm"
-                      className={latestBuilds.mac ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
-                      disabled={!latestBuilds.mac || downloadLoading.mac}
-                      onClick={async () => {
-                        if (latestBuilds.mac) {
-                          setDownloadLoading(prev => ({...prev, mac: true}));
-                          toast.success('Download wird vorbereitet...');
-                          try {
-                            const response = await fetch(latestBuilds.mac.artifact_url);
-                            const blob = await response.blob();
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'TSRID.Agent.dmg';
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-                            toast.success('Download gestartet!');
-                          } catch (err) {
-                            toast.error('Download fehlgeschlagen');
-                          } finally {
-                            setDownloadLoading(prev => ({...prev, mac: false}));
-                          }
-                        }
-                      }}
-                      data-testid="download-mac-dmg"
-                    >
-                      {downloadLoading.mac ? (
-                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                      ) : (
+                    {latestBuilds.mac && (
+                      <a 
+                        href={latestBuilds.mac.artifact_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
+                        data-testid="download-mac-dmg"
+                      >
                         <Download className="w-4 h-4 mr-1" />
-                      )}
-                      .dmg
-                    </Button>
+                        .dmg herunterladen
+                      </a>
+                    )}
                   </div>
                 </div>
 
@@ -760,46 +711,22 @@ const ElectronAgentManagement = () => {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-xs text-gray-400">Ubuntu, Debian, Fedora (64-bit)</div>
+                      <div className="text-xs text-gray-400">Ubuntu, Debian, Fedora (64-bit) - 103 MB</div>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm"
-                      className={latestBuilds.linux ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
-                      disabled={!latestBuilds.linux || downloadLoading.linux}
-                      onClick={async () => {
-                        if (latestBuilds.linux) {
-                          setDownloadLoading(prev => ({...prev, linux: true}));
-                          toast.success('Download wird vorbereitet...');
-                          try {
-                            const response = await fetch(latestBuilds.linux.artifact_url);
-                            const blob = await response.blob();
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'TSRID.Agent.AppImage';
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-                            toast.success('Download gestartet!');
-                          } catch (err) {
-                            toast.error('Download fehlgeschlagen');
-                          } finally {
-                            setDownloadLoading(prev => ({...prev, linux: false}));
-                          }
-                        }
-                      }}
-                      data-testid="download-linux-appimage"
-                    >
-                      {downloadLoading.linux ? (
-                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                      ) : (
+                    {latestBuilds.linux && (
+                      <a 
+                        href={latestBuilds.linux.artifact_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
+                        data-testid="download-linux-appimage"
+                      >
                         <Download className="w-4 h-4 mr-1" />
-                      )}
-                      .AppImage
-                    </Button>
+                        .AppImage herunterladen
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
