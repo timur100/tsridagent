@@ -6,7 +6,8 @@ const Store = require('electron-store');
 // Configuration store
 const store = new Store({
   defaults: {
-    serverUrl: 'https://agent.tsrid.com',
+    serverUrl: 'https://electron-regula-hub.preview.emergentagent.com',
+    appUrl: 'https://electron-regula-hub.preview.emergentagent.com/id-verification',
     deviceId: null,
     tenantId: null,
     locationCode: null,
@@ -39,14 +40,14 @@ function createWindow() {
     autoHideMenuBar: true
   });
 
-  // Load the app
+  // Load the web app URL
+  const appUrl = store.get('appUrl');
+  console.log(`Loading app URL: ${appUrl}`);
+  mainWindow.loadURL(appUrl);
+
+  // Open DevTools in dev mode
   if (isDev) {
-    // In dev mode, connect to React dev server
-    mainWindow.loadURL('http://localhost:3000');
     mainWindow.webContents.openDevTools();
-  } else {
-    // In production, load bundled React app
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
 
   mainWindow.on('closed', () => {
