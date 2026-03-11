@@ -789,8 +789,8 @@ async def download_file(platform: str):
     
     filename, content_type = file_map[platform_lower]
     
-    # Path to the file
-    file_path = Path("/app/frontend/public/downloads/v1.0.2") / filename
+    # Path to the file - use latest version
+    file_path = Path("/app/frontend/public/downloads/v1.0.3") / filename
     
     if not file_path.exists():
         raise HTTPException(status_code=404, detail=f"File not found: {filename}")
