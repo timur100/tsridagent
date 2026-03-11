@@ -648,7 +648,7 @@ const ElectronAgentManagement = () => {
                   </div>
                   {latestBuilds.win && (
                     <Button
-                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/file/win`, '_blank')}
+                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/download-page/win`, '_blank', 'noopener,noreferrer')}
                       className="bg-green-600 hover:bg-green-700"
                       data-testid="download-win-btn"
                     >
@@ -678,7 +678,7 @@ const ElectronAgentManagement = () => {
                   </div>
                   {latestBuilds.mac && (
                     <Button
-                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/file/mac`, '_blank')}
+                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/download-page/mac`, '_blank', 'noopener,noreferrer')}
                       className="bg-green-600 hover:bg-green-700"
                       data-testid="download-mac-btn"
                     >
@@ -708,7 +708,7 @@ const ElectronAgentManagement = () => {
                   </div>
                   {latestBuilds.linux && (
                     <Button
-                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/file/linux`, '_blank')}
+                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/download-page/linux`, '_blank', 'noopener,noreferrer')}
                       className="bg-green-600 hover:bg-green-700"
                       data-testid="download-linux-btn"
                     >

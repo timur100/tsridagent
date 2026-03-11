@@ -808,3 +808,130 @@ async def download_file(platform: str):
             "X-Content-Type-Options": "nosniff"
         }
     )
+
+
+from fastapi.responses import HTMLResponse
+
+@router.get("/download-page/{platform}")
+async def download_page(platform: str):
+    """HTML page that auto-starts download - bypasses iframe sandbox"""
+    
+    file_map = {
+        "win": ("TSRID.Agent.Setup.exe", "Windows"),
+        "windows": ("TSRID.Agent.Setup.exe", "Windows"),
+        "mac": ("TSRID.Agent.dmg", "macOS"),
+        "macos": ("TSRID.Agent.dmg", "macOS"),
+        "linux": ("TSRID.Agent.AppImage", "Linux"),
+    }
+    
+    platform_lower = platform.lower()
+    if platform_lower not in file_map:
+        raise HTTPException(status_code=400, detail=f"Invalid platform: {platform}")
+    
+    filename, platform_name = file_map[platform_lower]
+    download_url = f"/api/electron-agent/file/{platform_lower}"
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TSRID Agent Download - {platform_name}</title>
+        <style>
+            body {{
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+                color: white;
+                min-height: 100vh;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }}
+            .container {{
+                text-align: center;
+                padding: 40px;
+                background: rgba(0,0,0,0.5);
+                border-radius: 16px;
+                border: 1px solid #333;
+            }}
+            h1 {{
+                color: #d50c2d;
+                margin-bottom: 20px;
+            }}
+            .filename {{
+                font-family: monospace;
+                background: #333;
+                padding: 10px 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+                display: inline-block;
+            }}
+            .spinner {{
+                width: 50px;
+                height: 50px;
+                border: 4px solid #333;
+                border-top-color: #d50c2d;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 20px auto;
+            }}
+            @keyframes spin {{
+                to {{ transform: rotate(360deg); }}
+            }}
+            .manual-link {{
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #333;
+            }}
+            a {{
+                color: #4ade80;
+                text-decoration: none;
+            }}
+            a:hover {{
+                text-decoration: underline;
+            }}
+            .success {{
+                color: #4ade80;
+                font-size: 24px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>TSRID Agent Download</h1>
+            <p>Plattform: <strong>{platform_name}</strong></p>
+            <div class="filename">{filename}</div>
+            <div class="spinner" id="spinner"></div>
+            <p id="status">Download wird gestartet...</p>
+            <div class="manual-link">
+                <p>Falls der Download nicht automatisch startet:</p>
+                <a href="{download_url}" download="{filename}" id="download-link">
+                    Hier klicken zum manuellen Download
+                </a>
+            </div>
+        </div>
+        <script>
+            // Auto-start download after page loads
+            window.onload = function() {{
+                setTimeout(function() {{
+                    // Create invisible link and click it
+                    var link = document.createElement('a');
+                    link.href = '{download_url}';
+                    link.download = '{filename}';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Update UI
+                    document.getElementById('spinner').style.display = 'none';
+                    document.getElementById('status').innerHTML = '<span class="success">✓</span> Download gestartet!<br><small>Sie können dieses Fenster schließen.</small>';
+                }}, 500);
+            }};
+        </script>
+    </body>
+    </html>
+    """
+    
+    return HTMLResponse(content=html_content)
