@@ -650,13 +650,11 @@ const ElectronAgentManagement = () => {
                     {latestBuilds.win && (
                       <a 
                         href={latestBuilds.win.artifact_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
                         data-testid="download-win-exe"
                       >
                         <Download className="w-4 h-4 mr-1" />
-                        .exe herunterladen
+                        .exe
                       </a>
                     )}
                   </div>
@@ -684,13 +682,11 @@ const ElectronAgentManagement = () => {
                     {latestBuilds.mac && (
                       <a 
                         href={latestBuilds.mac.artifact_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
                         data-testid="download-mac-dmg"
                       >
                         <Download className="w-4 h-4 mr-1" />
-                        .dmg herunterladen
+                        .dmg
                       </a>
                     )}
                   </div>
@@ -718,13 +714,11 @@ const ElectronAgentManagement = () => {
                     {latestBuilds.linux && (
                       <a 
                         href={latestBuilds.linux.artifact_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
                         data-testid="download-linux-appimage"
                       >
                         <Download className="w-4 h-4 mr-1" />
-                        .AppImage herunterladen
+                        .AppImage
                       </a>
                     )}
                   </div>
