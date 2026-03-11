@@ -628,6 +628,9 @@ const ElectronAgentManagement = () => {
               </p>
               
               <div className="space-y-3">
+                {/* Hidden iframe for downloads */}
+                <iframe id="download-frame" style={{display: 'none'}} title="download"></iframe>
+                
                 {/* Windows Download */}
                 <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.win ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
                   <div className="flex items-center gap-3">
@@ -653,7 +656,9 @@ const ElectronAgentManagement = () => {
                       disabled={!latestBuilds.win}
                       onClick={() => {
                         if (latestBuilds.win) {
-                          window.location.href = latestBuilds.win.artifact_url;
+                          const iframe = document.getElementById('download-frame');
+                          iframe.src = latestBuilds.win.artifact_url;
+                          toast.success('Download gestartet...');
                         }
                       }}
                       data-testid="download-win-exe"
@@ -689,7 +694,9 @@ const ElectronAgentManagement = () => {
                       disabled={!latestBuilds.mac}
                       onClick={() => {
                         if (latestBuilds.mac) {
-                          window.location.href = latestBuilds.mac.artifact_url;
+                          const iframe = document.getElementById('download-frame');
+                          iframe.src = latestBuilds.mac.artifact_url;
+                          toast.success('Download gestartet...');
                         }
                       }}
                       data-testid="download-mac-dmg"
@@ -725,7 +732,9 @@ const ElectronAgentManagement = () => {
                       disabled={!latestBuilds.linux}
                       onClick={() => {
                         if (latestBuilds.linux) {
-                          window.location.href = latestBuilds.linux.artifact_url;
+                          const iframe = document.getElementById('download-frame');
+                          iframe.src = latestBuilds.linux.artifact_url;
+                          toast.success('Download gestartet...');
                         }
                       }}
                       data-testid="download-linux-appimage"
