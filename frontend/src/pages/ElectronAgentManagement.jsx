@@ -629,99 +629,132 @@ const ElectronAgentManagement = () => {
               
               <div className="space-y-3">
                 {/* Windows Download */}
-                <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.win ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500/20 rounded-lg">
-                      <Monitor className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div>
-                      <div className="font-bold flex items-center gap-2">
-                        Windows
-                        {latestBuilds.win && (
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
-                            v{latestBuilds.win.version}
-                          </Badge>
-                        )}
+                <div className={`p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.win ? 'border-green-500/50' : 'border-[#444]'}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-500/20 rounded-lg">
+                        <Monitor className="w-6 h-6 text-blue-400" />
                       </div>
-                      <div className="text-xs text-gray-400">Windows 10/11 (64-bit) - 75 MB</div>
+                      <div>
+                        <div className="font-bold flex items-center gap-2">
+                          Windows
+                          {latestBuilds.win && (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
+                              v{latestBuilds.win.version}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-400">Windows 10/11 (64-bit) - 75 MB</div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    {latestBuilds.win && (
-                      <a 
-                        href={latestBuilds.win.artifact_url}
-                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
-                        data-testid="download-win-exe"
+                  {latestBuilds.win && (
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        readOnly 
+                        value={latestBuilds.win.artifact_url}
+                        className="flex-1 bg-[#1a1a1a] border border-[#444] rounded px-3 py-2 text-sm text-cyan-400 font-mono"
+                        onClick={(e) => e.target.select()}
+                      />
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => {
+                          navigator.clipboard.writeText(latestBuilds.win.artifact_url);
+                          toast.success('Link kopiert! In Browser einfügen.');
+                        }}
                       >
-                        <Download className="w-4 h-4 mr-1" />
-                        .exe
-                      </a>
-                    )}
-                  </div>
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* macOS Download */}
-                <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.mac ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-500/20 rounded-lg">
-                      <Cpu className="w-6 h-6 text-gray-400" />
-                    </div>
-                    <div>
-                      <div className="font-bold flex items-center gap-2">
-                        macOS
-                        {latestBuilds.mac && (
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
-                            v{latestBuilds.mac.version}
-                          </Badge>
-                        )}
+                <div className={`p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.mac ? 'border-green-500/50' : 'border-[#444]'}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gray-500/20 rounded-lg">
+                        <Cpu className="w-6 h-6 text-gray-400" />
                       </div>
-                      <div className="text-xs text-gray-400">macOS 11+ (Intel & Apple Silicon) - 93 MB</div>
+                      <div>
+                        <div className="font-bold flex items-center gap-2">
+                          macOS
+                          {latestBuilds.mac && (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
+                              v{latestBuilds.mac.version}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-400">macOS 11+ (Intel & Apple Silicon) - 93 MB</div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    {latestBuilds.mac && (
-                      <a 
-                        href={latestBuilds.mac.artifact_url}
-                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
-                        data-testid="download-mac-dmg"
+                  {latestBuilds.mac && (
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        readOnly 
+                        value={latestBuilds.mac.artifact_url}
+                        className="flex-1 bg-[#1a1a1a] border border-[#444] rounded px-3 py-2 text-sm text-cyan-400 font-mono"
+                        onClick={(e) => e.target.select()}
+                      />
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => {
+                          navigator.clipboard.writeText(latestBuilds.mac.artifact_url);
+                          toast.success('Link kopiert! In Browser einfügen.');
+                        }}
                       >
-                        <Download className="w-4 h-4 mr-1" />
-                        .dmg
-                      </a>
-                    )}
-                  </div>
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Linux Download */}
-                <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.linux ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Terminal className="w-6 h-6 text-orange-400" />
-                    </div>
-                    <div>
-                      <div className="font-bold flex items-center gap-2">
-                        Linux
-                        {latestBuilds.linux && (
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
-                            v{latestBuilds.linux.version}
-                          </Badge>
-                        )}
+                <div className={`p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.linux ? 'border-green-500/50' : 'border-[#444]'}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-orange-500/20 rounded-lg">
+                        <Terminal className="w-6 h-6 text-orange-400" />
                       </div>
-                      <div className="text-xs text-gray-400">Ubuntu, Debian, Fedora (64-bit) - 103 MB</div>
+                      <div>
+                        <div className="font-bold flex items-center gap-2">
+                          Linux
+                          {latestBuilds.linux && (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
+                              v{latestBuilds.linux.version}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-400">Ubuntu, Debian, Fedora (64-bit) - 103 MB</div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    {latestBuilds.linux && (
-                      <a 
-                        href={latestBuilds.linux.artifact_url}
-                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
-                        data-testid="download-linux-appimage"
+                  {latestBuilds.linux && (
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        readOnly 
+                        value={latestBuilds.linux.artifact_url}
+                        className="flex-1 bg-[#1a1a1a] border border-[#444] rounded px-3 py-2 text-sm text-cyan-400 font-mono"
+                        onClick={(e) => e.target.select()}
+                      />
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => {
+                          navigator.clipboard.writeText(latestBuilds.linux.artifact_url);
+                          toast.success('Link kopiert! In Browser einfügen.');
+                        }}
                       >
-                        <Download className="w-4 h-4 mr-1" />
-                        .AppImage
-                      </a>
-                    )}
-                  </div>
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
