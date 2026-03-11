@@ -767,6 +767,39 @@ const ElectronAgentManagement = () => {
                       <strong>Builds verfügbar!</strong> Klicken Sie auf den Download-Button für Ihre Plattform.
                     </div>
                   </div>
+                  {/* Direct download links as fallback */}
+                  <div className="mt-3 pt-3 border-t border-green-500/30">
+                    <div className="text-xs text-gray-400 mb-2">Direkte Download-Links:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {latestBuilds.win && (
+                        <a 
+                          href="https://electron-regula-hub.preview.emergentagent.com/downloads/v1.0.2/TSRID.Agent.Setup.exe"
+                          className="text-xs text-cyan-400 hover:text-cyan-300 underline"
+                          download
+                        >
+                          Windows .exe
+                        </a>
+                      )}
+                      {latestBuilds.mac && (
+                        <a 
+                          href="https://electron-regula-hub.preview.emergentagent.com/downloads/v1.0.2/TSRID.Agent.dmg"
+                          className="text-xs text-cyan-400 hover:text-cyan-300 underline"
+                          download
+                        >
+                          macOS .dmg
+                        </a>
+                      )}
+                      {latestBuilds.linux && (
+                        <a 
+                          href="https://electron-regula-hub.preview.emergentagent.com/downloads/v1.0.2/TSRID.Agent.AppImage"
+                          className="text-xs text-cyan-400 hover:text-cyan-300 underline"
+                          download
+                        >
+                          Linux .AppImage
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
