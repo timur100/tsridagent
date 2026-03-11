@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <AssemblyName>RegulaService</AssemblyName>
+    <RootNamespace>RegulaService</RootNamespace>
+    <Version>1.0.0</Version>
+    <Authors>TSRID</Authors>
+    <Description>Regula Scanner Bridge Service für TSRID Agent</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!-- 
+    WICHTIG: Fügen Sie hier die Referenz zur Regula SDK hinzu!
+    
+    Option 1: COM-Referenz (empfohlen)
+    Rechtsklick auf "References" -> "Add COM Reference" -> "READERDEMO" auswählen
+    
+    Option 2: DLL-Referenz
+    <Reference Include="RegulaReader">
+      <HintPath>C:\Program Files\Regula\Document Reader SDK\bin\RegulaReader.dll</HintPath>
+    </Reference>
+    
+    Option 3: Kopieren Sie die DLLs in den Projektordner und referenzieren Sie sie
+  -->
+
+</Project>

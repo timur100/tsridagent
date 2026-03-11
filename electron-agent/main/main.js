@@ -311,15 +311,81 @@ ipcMain.handle('install-update', () => {
 
 // Get scanner status (will be implemented with Regula SDK)
 ipcMain.handle('get-scanner-status', async () => {
-  // This will call the Regula scanner module
-  const regulaScanner = require('./scanner/regula');
-  return await regulaScanner.getStatus();
+  try {
+    const { regulaClient } = require('./regulaClient');
+    const status = await regulaClient.checkService();
+    return {
+      available: true,
+      connected: status.scanner?.connected || false,
+      initialized: status.scanner?.initialized || false,
+      scanInProgress: status.scanner?.scanInProgress || false,
+      serviceRunning: true
+    };
+  } catch (error) {
+    return {
+      available: false,
+      connected: false,
+      initialized: false,
+      scanInProgress: false,
+      serviceRunning: false,
+      error: error.message
+    };
+  }
+});
+
+// Connect scanner
+ipcMain.handle('connect-scanner', async () => {
+  try {
+    const { regulaClient } = require('./regulaClient');
+    const result = await regulaClient.connect();
+    return { success: true, ...result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Disconnect scanner
+ipcMain.handle('disconnect-scanner', async () => {
+  try {
+    const { regulaClient } = require('./regulaClient');
+    const result = await regulaClient.disconnect();
+    return { success: true, ...result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 // Trigger scan
 ipcMain.handle('trigger-scan', async (event, options) => {
-  const regulaScanner = require('./scanner/regula');
-  return await regulaScanner.triggerScan(options);
+  try {
+    const { regulaClient } = require('./regulaClient');
+    const result = await regulaClient.scan();
+    return { success: true, result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Get last scan result
+ipcMain.handle('get-scan-result', async () => {
+  try {
+    const { regulaClient } = require('./regulaClient');
+    const result = await regulaClient.getLastResult();
+    return { success: true, result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Get scan images
+ipcMain.handle('get-scan-images', async () => {
+  try {
+    const { regulaClient } = require('./regulaClient');
+    const images = await regulaClient.getImages();
+    return { success: true, images };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 // =====================================
