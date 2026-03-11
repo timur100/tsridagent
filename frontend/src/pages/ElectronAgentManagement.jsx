@@ -647,15 +647,14 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   {latestBuilds.win && (
-                    <a 
-                      href={`${BACKEND_URL}/api/electron-agent/file/win`}
-                      download="TSRID.Agent.Setup.exe"
-                      className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
+                    <Button
+                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/file/win`, '_blank')}
+                      className="bg-green-600 hover:bg-green-700"
                       data-testid="download-win-btn"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       .exe
-                    </a>
+                    </Button>
                   )}
                 </div>
 
@@ -678,15 +677,14 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   {latestBuilds.mac && (
-                    <a 
-                      href={`${BACKEND_URL}/api/electron-agent/file/mac`}
-                      download="TSRID.Agent.dmg"
-                      className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
+                    <Button
+                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/file/mac`, '_blank')}
+                      className="bg-green-600 hover:bg-green-700"
                       data-testid="download-mac-btn"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       .dmg
-                    </a>
+                    </Button>
                   )}
                 </div>
 
@@ -709,15 +707,14 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   {latestBuilds.linux && (
-                    <a 
-                      href={`${BACKEND_URL}/api/electron-agent/file/linux`}
-                      download="TSRID.Agent.AppImage"
-                      className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white transition-colors"
+                    <Button
+                      onClick={() => window.open(`${BACKEND_URL}/api/electron-agent/file/linux`, '_blank')}
+                      className="bg-green-600 hover:bg-green-700"
                       data-testid="download-linux-btn"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       .AppImage
-                    </a>
+                    </Button>
                   )}
                 </div>
               </div>
