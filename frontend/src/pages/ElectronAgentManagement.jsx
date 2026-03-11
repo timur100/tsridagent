@@ -647,20 +647,27 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm"
-                      className={latestBuilds.win ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
-                      onClick={() => handleDownload('win')}
-                      disabled={downloadLoading.win}
-                      data-testid="download-win-exe"
-                    >
-                      {downloadLoading.win ? (
-                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                      ) : (
+                    {latestBuilds.win ? (
+                      <a 
+                        href={latestBuilds.win.artifact_url}
+                        download="TSRID.Agent.Setup.exe"
+                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white"
+                        data-testid="download-win-exe"
+                      >
                         <Download className="w-4 h-4 mr-1" />
-                      )}
-                      .exe
-                    </Button>
+                        .exe
+                      </a>
+                    ) : (
+                      <Button 
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={() => toast.error('Build nicht verfügbar')}
+                        data-testid="download-win-exe"
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        .exe
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -683,20 +690,27 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm"
-                      className={latestBuilds.mac ? "bg-green-600 hover:bg-green-700" : "bg-gray-600 hover:bg-gray-700"}
-                      onClick={() => handleDownload('mac')}
-                      disabled={downloadLoading.mac}
-                      data-testid="download-mac-dmg"
-                    >
-                      {downloadLoading.mac ? (
-                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                      ) : (
+                    {latestBuilds.mac ? (
+                      <a 
+                        href={latestBuilds.mac.artifact_url}
+                        download="TSRID.Agent.dmg"
+                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white"
+                        data-testid="download-mac-dmg"
+                      >
                         <Download className="w-4 h-4 mr-1" />
-                      )}
-                      .dmg
-                    </Button>
+                        .dmg
+                      </a>
+                    ) : (
+                      <Button 
+                        size="sm"
+                        className="bg-gray-600 hover:bg-gray-700"
+                        onClick={() => toast.error('Build nicht verfügbar')}
+                        data-testid="download-mac-dmg"
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        .dmg
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -719,20 +733,27 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm"
-                      className={latestBuilds.linux ? "bg-green-600 hover:bg-green-700" : "bg-orange-600 hover:bg-orange-700"}
-                      onClick={() => handleDownload('linux')}
-                      disabled={downloadLoading.linux}
-                      data-testid="download-linux-appimage"
-                    >
-                      {downloadLoading.linux ? (
-                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                      ) : (
+                    {latestBuilds.linux ? (
+                      <a 
+                        href={latestBuilds.linux.artifact_url}
+                        download="TSRID.Agent.AppImage"
+                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white"
+                        data-testid="download-linux-appimage"
+                      >
                         <Download className="w-4 h-4 mr-1" />
-                      )}
-                      .AppImage
-                    </Button>
+                        .AppImage
+                      </a>
+                    ) : (
+                      <Button 
+                        size="sm"
+                        className="bg-orange-600 hover:bg-orange-700"
+                        onClick={() => toast.error('Build nicht verfügbar')}
+                        data-testid="download-linux-appimage"
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        .AppImage
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
