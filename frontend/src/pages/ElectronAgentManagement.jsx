@@ -647,32 +647,20 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {latestBuilds.win ? (
-                      <>
-                        <Button
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700"
-                          onClick={() => {
-                            navigator.clipboard.writeText(latestBuilds.win.artifact_url);
-                            toast.success('Download-Link kopiert! Fügen Sie ihn in Ihren Browser ein.');
-                          }}
-                          data-testid="copy-win-link"
-                        >
-                          <Copy className="w-4 h-4 mr-1" />
-                          Link kopieren
-                        </Button>
-                      </>
-                    ) : (
-                      <Button 
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700"
-                        onClick={() => toast.error('Build nicht verfügbar')}
-                        data-testid="download-win-exe"
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        .exe
-                      </Button>
-                    )}
+                    <Button 
+                      size="sm"
+                      className={latestBuilds.win ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
+                      disabled={!latestBuilds.win}
+                      onClick={() => {
+                        if (latestBuilds.win) {
+                          window.location.href = latestBuilds.win.artifact_url;
+                        }
+                      }}
+                      data-testid="download-win-exe"
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      .exe
+                    </Button>
                   </div>
                 </div>
 
@@ -695,30 +683,20 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {latestBuilds.mac ? (
-                      <Button
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700"
-                        onClick={() => {
-                          navigator.clipboard.writeText(latestBuilds.mac.artifact_url);
-                          toast.success('Download-Link kopiert! Fügen Sie ihn in Ihren Browser ein.');
-                        }}
-                        data-testid="copy-mac-link"
-                      >
-                        <Copy className="w-4 h-4 mr-1" />
-                        Link kopieren
-                      </Button>
-                    ) : (
-                      <Button 
-                        size="sm"
-                        className="bg-gray-600 hover:bg-gray-700"
-                        onClick={() => toast.error('Build nicht verfügbar')}
-                        data-testid="download-mac-dmg"
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        .dmg
-                      </Button>
-                    )}
+                    <Button 
+                      size="sm"
+                      className={latestBuilds.mac ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
+                      disabled={!latestBuilds.mac}
+                      onClick={() => {
+                        if (latestBuilds.mac) {
+                          window.location.href = latestBuilds.mac.artifact_url;
+                        }
+                      }}
+                      data-testid="download-mac-dmg"
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      .dmg
+                    </Button>
                   </div>
                 </div>
 
@@ -741,30 +719,20 @@ const ElectronAgentManagement = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {latestBuilds.linux ? (
-                      <Button
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700"
-                        onClick={() => {
-                          navigator.clipboard.writeText(latestBuilds.linux.artifact_url);
-                          toast.success('Download-Link kopiert! Fügen Sie ihn in Ihren Browser ein.');
-                        }}
-                        data-testid="copy-linux-link"
-                      >
-                        <Copy className="w-4 h-4 mr-1" />
-                        Link kopieren
-                      </Button>
-                    ) : (
-                      <Button 
-                        size="sm"
-                        className="bg-orange-600 hover:bg-orange-700"
-                        onClick={() => toast.error('Build nicht verfügbar')}
-                        data-testid="download-linux-appimage"
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        .AppImage
-                      </Button>
-                    )}
+                    <Button 
+                      size="sm"
+                      className={latestBuilds.linux ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
+                      disabled={!latestBuilds.linux}
+                      onClick={() => {
+                        if (latestBuilds.linux) {
+                          window.location.href = latestBuilds.linux.artifact_url;
+                        }
+                      }}
+                      data-testid="download-linux-appimage"
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      .AppImage
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -776,39 +744,6 @@ const ElectronAgentManagement = () => {
                     <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-green-300">
                       <strong>Builds verfügbar!</strong> Klicken Sie auf den Download-Button für Ihre Plattform.
-                    </div>
-                  </div>
-                  {/* Direct download links as fallback */}
-                  <div className="mt-3 pt-3 border-t border-green-500/30">
-                    <div className="text-xs text-gray-400 mb-2">Direkte Download-Links:</div>
-                    <div className="flex flex-wrap gap-2">
-                      {latestBuilds.win && (
-                        <a 
-                          href="https://electron-regula-hub.preview.emergentagent.com/downloads/v1.0.2/TSRID.Agent.Setup.exe"
-                          className="text-xs text-cyan-400 hover:text-cyan-300 underline"
-                          download
-                        >
-                          Windows .exe
-                        </a>
-                      )}
-                      {latestBuilds.mac && (
-                        <a 
-                          href="https://electron-regula-hub.preview.emergentagent.com/downloads/v1.0.2/TSRID.Agent.dmg"
-                          className="text-xs text-cyan-400 hover:text-cyan-300 underline"
-                          download
-                        >
-                          macOS .dmg
-                        </a>
-                      )}
-                      {latestBuilds.linux && (
-                        <a 
-                          href="https://electron-regula-hub.preview.emergentagent.com/downloads/v1.0.2/TSRID.Agent.AppImage"
-                          className="text-xs text-cyan-400 hover:text-cyan-300 underline"
-                          download
-                        >
-                          Linux .AppImage
-                        </a>
-                      )}
                     </div>
                   </div>
                 </div>
