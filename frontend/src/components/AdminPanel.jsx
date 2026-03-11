@@ -1516,14 +1516,39 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                 </div>
               </div>
 
+              {/* Test Button - works in browser too */}
+              <Card className="p-6 border-2 border-yellow-500/50 bg-yellow-500/10">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  Bildschirmschoner testen
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Testen Sie den Bildschirmschoner direkt im Browser. Klicken Sie auf den Bildschirm oder geben Sie die PIN ein, um ihn zu deaktivieren.
+                </p>
+                <Button 
+                  onClick={() => {
+                    // Dispatch custom event to trigger screensaver test
+                    window.dispatchEvent(new CustomEvent('test-screensaver'));
+                    onClose(); // Close admin panel
+                  }}
+                  className="gap-2 bg-yellow-600 hover:bg-yellow-700"
+                >
+                  <Monitor className="h-4 w-4" />
+                  Bildschirmschoner jetzt testen
+                </Button>
+              </Card>
+
               {!isElectronApp ? (
                 <Card className="p-6">
-                  <div className="text-center py-8">
-                    <Monitor className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Nur in Desktop-App verfügbar</h3>
-                    <p className="text-muted-foreground">
-                      Der Bildschirmschoner ist nur in der installierten TSRID Agent Desktop-App verfügbar.
-                    </p>
+                  <div className="flex items-start gap-4">
+                    <Monitor className="h-8 w-8 text-blue-500 flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">Desktop-App Einstellungen</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Die vollständigen Einstellungen (Autostart, Timeout-Speicherung) sind nur in der installierten TSRID Agent Desktop-App verfügbar.
+                        Der Test-Button oben funktioniert aber auch im Browser!
+                      </p>
+                    </div>
                   </div>
                 </Card>
               ) : (

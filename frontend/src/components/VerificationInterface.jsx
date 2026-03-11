@@ -978,6 +978,19 @@ const VerificationInterface = () => {
     lastActivityRef.current = Date.now();
   };
 
+  // Listen for test-screensaver event from Admin Panel
+  useEffect(() => {
+    const handleTestScreensaver = () => {
+      console.log('Testing screensaver...');
+      setScreensaverActive(true);
+    };
+    
+    window.addEventListener('test-screensaver', handleTestScreensaver);
+    return () => {
+      window.removeEventListener('test-screensaver', handleTestScreensaver);
+    };
+  }, []);
+
   // Load PDF mappings from backend
   const loadPdfMappings = async () => {
     try {
@@ -1883,16 +1896,14 @@ const VerificationInterface = () => {
         />
       )}
 
-      {/* Screensaver Overlay - Electron only */}
-      {window.isElectron && (
-        <ScreensaverOverlay
-          isActive={screensaverActive}
-          onUnlock={handleScreensaverUnlock}
-          requirePin={stationSettings.hasStationPin}
-          onVerifyPin={verifyStationPin}
-          stationName={adminSettings.stationName || 'TSRID Agent'}
-        />
-      )}
+      {/* Screensaver Overlay - Works in browser for testing too */}
+      <ScreensaverOverlay
+        isActive={screensaverActive}
+        onUnlock={handleScreensaverUnlock}
+        requirePin={stationSettings.hasStationPin}
+        onVerifyPin={verifyStationPin}
+        stationName={adminSettings.stationName || 'TSRID Agent'}
+      />
 
       {/* Startup PIN Prompt - Electron only */}
       {window.isElectron && showStartupPin && (
