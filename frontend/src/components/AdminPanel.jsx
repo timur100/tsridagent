@@ -25,6 +25,18 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     role: 'Security'
   });
 
+  // Station PIN & Screensaver settings
+  const [stationPinSettings, setStationPinSettings] = useState({
+    stationPin: '',
+    newPin: '',
+    confirmPin: '',
+    requirePinOnStart: false,
+    screensaverEnabled: true,
+    screensaverTimeout: 5,
+    autoStartEnabled: true
+  });
+  const [isElectronApp, setIsElectronApp] = useState(false);
+
   // Location selection state
   const [continents, setContinents] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -69,6 +81,76 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
       fetchContinents();
     }
   }, [isOpen]);
+
+  // Check if running in Electron and load station settings
+  useEffect(() => {
+    if (isOpen) {
+      const checkElectron = async () => {
+        if (window.isElectron && window.electronAPI) {
+          setIsElectronApp(true);
+          try {
+            const settings = await window.electronAPI.getStationSettings();
+            setStationPinSettings(prev => ({
+              ...prev,
+              requirePinOnStart: settings.requirePinOnStart || false,
+              screensaverEnabled: settings.screensaverEnabled !== false,
+              screensaverTimeout: settings.screensaverTimeout || 5,
+              autoStartEnabled: settings.autoStartEnabled !== false,
+              hasPin: settings.hasStationPin || false
+            }));
+          } catch (error) {
+            console.error('Error loading station settings:', error);
+          }
+        }
+      };
+      checkElectron();
+    }
+  }, [isOpen]);
+
+  // Save station PIN
+  const saveStationPin = async () => {
+    if (stationPinSettings.newPin !== stationPinSettings.confirmPin) {
+      toast.error('PINs stimmen nicht überein');
+      return;
+    }
+    if (stationPinSettings.newPin.length < 4) {
+      toast.error('PIN muss mindestens 4 Ziffern haben');
+      return;
+    }
+    if (window.electronAPI && window.electronAPI.setStationSettings) {
+      try {
+        await window.electronAPI.setStationSettings({
+          stationPin: stationPinSettings.newPin
+        });
+        setStationPinSettings(prev => ({
+          ...prev,
+          newPin: '',
+          confirmPin: '',
+          hasPin: true
+        }));
+        toast.success('Stations-PIN gespeichert');
+      } catch (error) {
+        toast.error('Fehler beim Speichern der PIN');
+      }
+    }
+  };
+
+  // Save screensaver settings
+  const saveScreensaverSettings = async () => {
+    if (window.electronAPI && window.electronAPI.setStationSettings) {
+      try {
+        await window.electronAPI.setStationSettings({
+          requirePinOnStart: stationPinSettings.requirePinOnStart,
+          screensaverEnabled: stationPinSettings.screensaverEnabled,
+          screensaverTimeout: stationPinSettings.screensaverTimeout,
+          autoStartEnabled: stationPinSettings.autoStartEnabled
+        });
+        toast.success('Einstellungen gespeichert');
+      } catch (error) {
+        toast.error('Fehler beim Speichern');
+      }
+    }
+  };
 
   // Fetch continents with retry
   const fetchContinents = async (retryCount = 0) => {
@@ -261,6 +343,14 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
       subItems: [
         { id: 'settings', label: 'Einstellungen', icon: Settings },
         { id: 'devices', label: 'Geräte & Scanner', icon: Monitor }
+      ]
+    },
+    station: {
+      label: 'Station',
+      icon: Shield,
+      subItems: [
+        { id: 'station-pin', label: 'Stations-PIN', icon: Lock },
+        { id: 'screensaver', label: 'Bildschirmschoner', icon: Timer }
       ]
     },
     admin: {
@@ -1321,6 +1411,200 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
+            </div>
+          )}
+
+          {/* Station PIN Tab */}
+          {activeTab === 'station-pin' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">Stations-PIN</h2>
+                  <p className="text-muted-foreground">PIN-Schutz für die Station konfigurieren</p>
+                </div>
+              </div>
+
+              {!isElectronApp ? (
+                <Card className="p-6">
+                  <div className="text-center py-8">
+                    <Monitor className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Nur in Desktop-App verfügbar</h3>
+                    <p className="text-muted-foreground">
+                      Die Stations-PIN-Funktion ist nur in der installierten TSRID Agent Desktop-App verfügbar.
+                    </p>
+                  </div>
+                </Card>
+              ) : (
+                <>
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <Lock className="h-5 w-5" />
+                      Neue Stations-PIN setzen
+                    </h3>
+                    <div className="space-y-4 max-w-md">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Neue PIN (4-6 Ziffern)
+                        </label>
+                        <input
+                          type="password"
+                          maxLength="6"
+                          value={stationPinSettings.newPin}
+                          onChange={(e) => setStationPinSettings({ ...stationPinSettings, newPin: e.target.value.replace(/\D/g, '') })}
+                          className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
+                          placeholder="****"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          PIN bestätigen
+                        </label>
+                        <input
+                          type="password"
+                          maxLength="6"
+                          value={stationPinSettings.confirmPin}
+                          onChange={(e) => setStationPinSettings({ ...stationPinSettings, confirmPin: e.target.value.replace(/\D/g, '') })}
+                          className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
+                          placeholder="****"
+                        />
+                      </div>
+                      <Button onClick={saveStationPin} className="gap-2">
+                        <Save className="h-4 w-4" />
+                        PIN speichern
+                      </Button>
+                      {stationPinSettings.hasPin && (
+                        <p className="text-sm text-green-500 flex items-center gap-1">
+                          <Shield className="h-4 w-4" />
+                          Stations-PIN ist aktiv
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">PIN-Einstellungen</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-foreground">PIN beim Start erforderlich</p>
+                          <p className="text-sm text-muted-foreground">Benutzer muss sich beim App-Start anmelden</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={stationPinSettings.requirePinOnStart}
+                            onChange={(e) => setStationPinSettings({ ...stationPinSettings, requirePinOnStart: e.target.checked })}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                        </label>
+                      </div>
+                    </div>
+                  </Card>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Screensaver Tab */}
+          {activeTab === 'screensaver' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">Bildschirmschoner</h2>
+                  <p className="text-muted-foreground">Einbrennen verhindern und Station schützen</p>
+                </div>
+              </div>
+
+              {!isElectronApp ? (
+                <Card className="p-6">
+                  <div className="text-center py-8">
+                    <Monitor className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Nur in Desktop-App verfügbar</h3>
+                    <p className="text-muted-foreground">
+                      Der Bildschirmschoner ist nur in der installierten TSRID Agent Desktop-App verfügbar.
+                    </p>
+                  </div>
+                </Card>
+              ) : (
+                <>
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <Timer className="h-5 w-5" />
+                      Bildschirmschoner-Einstellungen
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-foreground">Bildschirmschoner aktivieren</p>
+                          <p className="text-sm text-muted-foreground">Schützt vor Einbrennen bei Inaktivität</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={stationPinSettings.screensaverEnabled}
+                            onChange={(e) => setStationPinSettings({ ...stationPinSettings, screensaverEnabled: e.target.checked })}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                        </label>
+                      </div>
+
+                      <div className="p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <p className="font-medium text-foreground">Timeout (Minuten)</p>
+                            <p className="text-sm text-muted-foreground">Zeit bis Bildschirmschoner aktiv wird</p>
+                          </div>
+                          <span className="text-2xl font-bold text-foreground">{stationPinSettings.screensaverTimeout}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="30"
+                          value={stationPinSettings.screensaverTimeout}
+                          onChange={(e) => setStationPinSettings({ ...stationPinSettings, screensaverTimeout: parseInt(e.target.value) })}
+                          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                          <span>1 Min</span>
+                          <span>15 Min</span>
+                          <span>30 Min</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <Monitor className="h-5 w-5" />
+                      Autostart
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-foreground">Mit Windows starten</p>
+                          <p className="text-sm text-muted-foreground">TSRID Agent startet automatisch beim Hochfahren</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={stationPinSettings.autoStartEnabled}
+                            onChange={(e) => setStationPinSettings({ ...stationPinSettings, autoStartEnabled: e.target.checked })}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                        </label>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Button onClick={saveScreensaverSettings} className="gap-2">
+                    <Save className="h-4 w-4" />
+                    Einstellungen speichern
+                  </Button>
+                </>
+              )}
             </div>
           )}
 

@@ -25,6 +25,8 @@ import PDFFullscreenViewer from './PDFFullscreenViewer';
 import ScannerPinPrompt from './ScannerPinPrompt';
 import SecurityHelpButton from './SecurityHelpButton';
 import DatabaseAdditionButton from './DatabaseAdditionButton';
+import ScreensaverOverlay from './ScreensaverOverlay';
+import StartupPinPrompt from './StartupPinPrompt';
 import usePortalMetadata from '../hooks/usePortalMetadata';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
@@ -168,6 +170,19 @@ const VerificationInterface = () => {
   const [isKioskMode, setIsKioskMode] = useState(true);
   const [kioskToggleClicks, setKioskToggleClicks] = useState(0);
   const kioskToggleTimeoutRef = useRef(null);
+  
+  // Screensaver & PIN State
+  const [screensaverActive, setScreensaverActive] = useState(false);
+  const [showStartupPin, setShowStartupPin] = useState(false);
+  const [stationSettings, setStationSettings] = useState({
+    stationPin: '',
+    requirePinOnStart: false,
+    screensaverEnabled: true,
+    screensaverTimeout: 5,
+    hasStationPin: false
+  });
+  const lastActivityRef = useRef(Date.now());
+  const screensaverTimerRef = useRef(null);
   const [securityUsers, setSecurityUsers] = useState([
     { id: 0, employeeNumber: '00', name: 'Administrator', pin: '1234', role: 'Admin' },
     { id: 1, employeeNumber: '01', name: 'Max Müller', pin: '1111', role: 'Security' },
@@ -869,6 +884,98 @@ const VerificationInterface = () => {
         toast('Vollbildmodus nur in der Desktop-App verfügbar', { icon: 'ℹ️', duration: 2000 });
       }
     }
+  };
+
+  // =====================================
+  // SCREENSAVER & STATION PIN LOGIC
+  // =====================================
+  
+  // Load station settings on mount
+  useEffect(() => {
+    loadStationSettings();
+  }, []);
+
+  const loadStationSettings = async () => {
+    if (window.electronAPI && window.electronAPI.getStationSettings) {
+      try {
+        const settings = await window.electronAPI.getStationSettings();
+        setStationSettings(settings);
+        
+        // Check if startup PIN is required
+        if (settings.requirePinOnStart && settings.hasStationPin) {
+          setShowStartupPin(true);
+        }
+      } catch (error) {
+        console.error('Error loading station settings:', error);
+      }
+    }
+  };
+
+  // Reset activity timer on any user interaction
+  const resetActivityTimer = useCallback(() => {
+    lastActivityRef.current = Date.now();
+    
+    // If screensaver is active and doesn't require PIN, deactivate it
+    if (screensaverActive && !stationSettings.hasStationPin) {
+      setScreensaverActive(false);
+    }
+  }, [screensaverActive, stationSettings.hasStationPin]);
+
+  // Setup screensaver timer
+  useEffect(() => {
+    if (!window.isElectron || !stationSettings.screensaverEnabled) return;
+
+    const checkInactivity = () => {
+      const inactiveTime = (Date.now() - lastActivityRef.current) / 1000 / 60; // minutes
+      
+      if (inactiveTime >= stationSettings.screensaverTimeout && !screensaverActive && !isAdminPanelOpen && !showStartupPin) {
+        setScreensaverActive(true);
+      }
+    };
+
+    // Check every 10 seconds
+    screensaverTimerRef.current = setInterval(checkInactivity, 10000);
+
+    // Add event listeners for activity
+    const events = ['mousedown', 'mousemove', 'keydown', 'touchstart', 'scroll'];
+    events.forEach(event => {
+      document.addEventListener(event, resetActivityTimer, { passive: true });
+    });
+
+    return () => {
+      if (screensaverTimerRef.current) {
+        clearInterval(screensaverTimerRef.current);
+      }
+      events.forEach(event => {
+        document.removeEventListener(event, resetActivityTimer);
+      });
+    };
+  }, [stationSettings.screensaverEnabled, stationSettings.screensaverTimeout, screensaverActive, isAdminPanelOpen, showStartupPin, resetActivityTimer]);
+
+  // Verify station PIN
+  const verifyStationPin = async (pin) => {
+    if (window.electronAPI && window.electronAPI.verifyStationPin) {
+      try {
+        const result = await window.electronAPI.verifyStationPin(pin);
+        return result;
+      } catch (error) {
+        console.error('Error verifying PIN:', error);
+        return { valid: false, message: 'Fehler bei PIN-Überprüfung' };
+      }
+    }
+    return { valid: true };
+  };
+
+  // Handle screensaver unlock
+  const handleScreensaverUnlock = () => {
+    setScreensaverActive(false);
+    lastActivityRef.current = Date.now();
+  };
+
+  // Handle startup PIN success
+  const handleStartupPinSuccess = () => {
+    setShowStartupPin(false);
+    lastActivityRef.current = Date.now();
   };
 
   // Load PDF mappings from backend
@@ -1773,6 +1880,26 @@ const VerificationInterface = () => {
           pdfUrl={fullscreenPDFData.url}
           title={fullscreenPDFData.title}
           onClose={closeFullscreenPDF}
+        />
+      )}
+
+      {/* Screensaver Overlay - Electron only */}
+      {window.isElectron && (
+        <ScreensaverOverlay
+          isActive={screensaverActive}
+          onUnlock={handleScreensaverUnlock}
+          requirePin={stationSettings.hasStationPin}
+          onVerifyPin={verifyStationPin}
+          stationName={adminSettings.stationName || 'TSRID Agent'}
+        />
+      )}
+
+      {/* Startup PIN Prompt - Electron only */}
+      {window.isElectron && showStartupPin && (
+        <StartupPinPrompt
+          onSuccess={handleStartupPinSuccess}
+          onVerifyPin={verifyStationPin}
+          stationName={adminSettings.stationName || 'TSRID Agent'}
         />
       )}
     </div>

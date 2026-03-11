@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, globalShortcut, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, globalShortcut, screen, powerSaveBlocker } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const Store = require('electron-store');
@@ -13,13 +13,20 @@ const store = new Store({
     locationCode: null,
     autoUpdate: true,
     lastVersion: '1.0.0',
-    kioskMode: true  // Start in kiosk mode by default
+    kioskMode: true,  // Start in kiosk mode by default
+    // New settings for PIN and screensaver
+    stationPin: '',  // Station PIN for unlocking
+    requirePinOnStart: false,  // Require PIN on app start
+    screensaverEnabled: true,  // Enable screensaver
+    screensaverTimeout: 5,  // Minutes of inactivity before screensaver
+    autoStartEnabled: true  // Auto-start with Windows
   }
 });
 
 let mainWindow;
 let isDev = process.argv.includes('--dev');
 let isKioskMode = store.get('kioskMode', true);
+let powerSaveId = null;
 
 // Disable security warnings in dev mode
 if (isDev) {
@@ -191,6 +198,71 @@ ipcMain.handle('get-kiosk-mode', () => {
   return { kioskMode: isKioskMode };
 });
 
+// =====================================
+// STATION PIN & SCREENSAVER HANDLERS
+// =====================================
+
+// Get station settings
+ipcMain.handle('get-station-settings', () => {
+  return {
+    stationPin: store.get('stationPin', ''),
+    requirePinOnStart: store.get('requirePinOnStart', false),
+    screensaverEnabled: store.get('screensaverEnabled', true),
+    screensaverTimeout: store.get('screensaverTimeout', 5),
+    autoStartEnabled: store.get('autoStartEnabled', true),
+    hasStationPin: !!store.get('stationPin', '')
+  };
+});
+
+// Set station settings
+ipcMain.handle('set-station-settings', (event, settings) => {
+  if (settings.stationPin !== undefined) {
+    store.set('stationPin', settings.stationPin);
+  }
+  if (settings.requirePinOnStart !== undefined) {
+    store.set('requirePinOnStart', settings.requirePinOnStart);
+  }
+  if (settings.screensaverEnabled !== undefined) {
+    store.set('screensaverEnabled', settings.screensaverEnabled);
+  }
+  if (settings.screensaverTimeout !== undefined) {
+    store.set('screensaverTimeout', settings.screensaverTimeout);
+  }
+  if (settings.autoStartEnabled !== undefined) {
+    store.set('autoStartEnabled', settings.autoStartEnabled);
+    // Set Windows auto-start
+    app.setLoginItemSettings({
+      openAtLogin: settings.autoStartEnabled,
+      path: app.getPath('exe'),
+      args: []
+    });
+  }
+  return { success: true };
+});
+
+// Verify station PIN
+ipcMain.handle('verify-station-pin', (event, pin) => {
+  const storedPin = store.get('stationPin', '');
+  if (!storedPin) {
+    return { valid: true, message: 'Keine PIN erforderlich' };
+  }
+  const isValid = pin === storedPin;
+  return { 
+    valid: isValid, 
+    message: isValid ? 'PIN korrekt' : 'Falsche PIN'
+  };
+});
+
+// Check if PIN is required on start
+ipcMain.handle('check-pin-required', () => {
+  const stationPin = store.get('stationPin', '');
+  const requirePinOnStart = store.get('requirePinOnStart', false);
+  return {
+    required: requirePinOnStart && !!stationPin,
+    hasPin: !!stationPin
+  };
+});
+
 // Set configuration
 ipcMain.handle('set-config', (event, config) => {
   Object.keys(config).forEach(key => {
@@ -297,12 +369,4 @@ if (!gotTheLock) {
 } else {
   app.on('second-instance', () => {
     if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.focus();
-    }
-  });
-}
-
-console.log(`TSRID Agent v${app.getVersion()} starting...`);
-console.log(`Platform: ${process.platform} ${process.arch}`);
-console.log(`Dev mode: ${isDev}`);
+      if (

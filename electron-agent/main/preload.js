@@ -28,6 +28,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   toggleKioskMode: () => ipcRenderer.invoke('toggle-kiosk-mode'),
   getKioskMode: () => ipcRenderer.invoke('get-kiosk-mode'),
   
+  // Station PIN & Screensaver
+  getStationSettings: () => ipcRenderer.invoke('get-station-settings'),
+  setStationSettings: (settings) => ipcRenderer.invoke('set-station-settings', settings),
+  verifyStationPin: (pin) => ipcRenderer.invoke('verify-station-pin', pin),
+  checkPinRequired: () => ipcRenderer.invoke('check-pin-required'),
+  
   // Platform info
   platform: process.platform,
   arch: process.arch
