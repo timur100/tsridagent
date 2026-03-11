@@ -774,20 +774,20 @@ async def register_manual_build(
 async def download_file(platform: str):
     """Serve download file with proper headers to force download"""
     
-    # Map platform to filename
+    # Map platform to filename - use application/octet-stream to force download
     file_map = {
-        "win": ("TSRID.Agent.Setup.exe", "application/x-msdownload"),
-        "windows": ("TSRID.Agent.Setup.exe", "application/x-msdownload"),
-        "mac": ("TSRID.Agent.dmg", "application/x-apple-diskimage"),
-        "macos": ("TSRID.Agent.dmg", "application/x-apple-diskimage"),
-        "linux": ("TSRID.Agent.AppImage", "application/x-executable"),
+        "win": "TSRID.Agent.Setup.exe",
+        "windows": "TSRID.Agent.Setup.exe",
+        "mac": "TSRID.Agent.dmg",
+        "macos": "TSRID.Agent.dmg",
+        "linux": "TSRID.Agent.AppImage",
     }
     
     platform_lower = platform.lower()
     if platform_lower not in file_map:
         raise HTTPException(status_code=400, detail=f"Invalid platform: {platform}")
     
-    filename, content_type = file_map[platform_lower]
+    filename = file_map[platform_lower]
     
     # Path to the file - use latest version
     file_path = Path("/app/frontend/public/downloads/v1.0.3") / filename
@@ -795,12 +795,16 @@ async def download_file(platform: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail=f"File not found: {filename}")
     
+    # Use application/octet-stream to force browser to download instead of display
     return FileResponse(
         path=str(file_path),
         filename=filename,
-        media_type=content_type,
+        media_type="application/octet-stream",
         headers={
             "Content-Disposition": f'attachment; filename="{filename}"',
-            "Cache-Control": "no-cache"
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+            "X-Content-Type-Options": "nosniff"
         }
     )
