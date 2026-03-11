@@ -628,9 +628,6 @@ const ElectronAgentManagement = () => {
               </p>
               
               <div className="space-y-3">
-                {/* Hidden iframe for downloads */}
-                <iframe id="download-frame" style={{display: 'none'}} title="download"></iframe>
-                
                 {/* Windows Download */}
                 <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.win ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
                   <div className="flex items-center gap-3">
@@ -653,17 +650,38 @@ const ElectronAgentManagement = () => {
                     <Button 
                       size="sm"
                       className={latestBuilds.win ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
-                      disabled={!latestBuilds.win}
-                      onClick={() => {
+                      disabled={!latestBuilds.win || downloadLoading.win}
+                      onClick={async () => {
                         if (latestBuilds.win) {
-                          const iframe = document.getElementById('download-frame');
-                          iframe.src = latestBuilds.win.artifact_url;
-                          toast.success('Download gestartet...');
+                          setDownloadLoading(prev => ({...prev, win: true}));
+                          toast.success('Download wird vorbereitet...');
+                          try {
+                            const response = await fetch(latestBuilds.win.artifact_url);
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'TSRID.Agent.Setup.exe';
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                            toast.success('Download gestartet!');
+                          } catch (err) {
+                            toast.error('Download fehlgeschlagen');
+                            console.error(err);
+                          } finally {
+                            setDownloadLoading(prev => ({...prev, win: false}));
+                          }
                         }
                       }}
                       data-testid="download-win-exe"
                     >
-                      <Download className="w-4 h-4 mr-1" />
+                      {downloadLoading.win ? (
+                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-1" />
+                      )}
                       .exe
                     </Button>
                   </div>
@@ -691,17 +709,37 @@ const ElectronAgentManagement = () => {
                     <Button 
                       size="sm"
                       className={latestBuilds.mac ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
-                      disabled={!latestBuilds.mac}
-                      onClick={() => {
+                      disabled={!latestBuilds.mac || downloadLoading.mac}
+                      onClick={async () => {
                         if (latestBuilds.mac) {
-                          const iframe = document.getElementById('download-frame');
-                          iframe.src = latestBuilds.mac.artifact_url;
-                          toast.success('Download gestartet...');
+                          setDownloadLoading(prev => ({...prev, mac: true}));
+                          toast.success('Download wird vorbereitet...');
+                          try {
+                            const response = await fetch(latestBuilds.mac.artifact_url);
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'TSRID.Agent.dmg';
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                            toast.success('Download gestartet!');
+                          } catch (err) {
+                            toast.error('Download fehlgeschlagen');
+                          } finally {
+                            setDownloadLoading(prev => ({...prev, mac: false}));
+                          }
                         }
                       }}
                       data-testid="download-mac-dmg"
                     >
-                      <Download className="w-4 h-4 mr-1" />
+                      {downloadLoading.mac ? (
+                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-1" />
+                      )}
                       .dmg
                     </Button>
                   </div>
@@ -729,17 +767,37 @@ const ElectronAgentManagement = () => {
                     <Button 
                       size="sm"
                       className={latestBuilds.linux ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}
-                      disabled={!latestBuilds.linux}
-                      onClick={() => {
+                      disabled={!latestBuilds.linux || downloadLoading.linux}
+                      onClick={async () => {
                         if (latestBuilds.linux) {
-                          const iframe = document.getElementById('download-frame');
-                          iframe.src = latestBuilds.linux.artifact_url;
-                          toast.success('Download gestartet...');
+                          setDownloadLoading(prev => ({...prev, linux: true}));
+                          toast.success('Download wird vorbereitet...');
+                          try {
+                            const response = await fetch(latestBuilds.linux.artifact_url);
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'TSRID.Agent.AppImage';
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                            toast.success('Download gestartet!');
+                          } catch (err) {
+                            toast.error('Download fehlgeschlagen');
+                          } finally {
+                            setDownloadLoading(prev => ({...prev, linux: false}));
+                          }
                         }
                       }}
                       data-testid="download-linux-appimage"
                     >
-                      <Download className="w-4 h-4 mr-1" />
+                      {downloadLoading.linux ? (
+                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-1" />
+                      )}
                       .AppImage
                     </Button>
                   </div>
