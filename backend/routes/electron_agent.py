@@ -5,10 +5,12 @@ Manages Electron app versions, updates, and device tracking.
 """
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Query, BackgroundTasks
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from pymongo import MongoClient
+from pathlib import Path
 import os
 import uuid
 import logging
@@ -763,3 +765,42 @@ async def register_manual_build(
         "build": {k: v for k, v in doc.items() if k != "_id"}
     }
 
+
+# =====================================
+# DIRECT FILE DOWNLOAD ENDPOINT
+# =====================================
+
+@router.get("/file/{platform}")
+async def download_file(platform: str):
+    """Serve download file with proper headers to force download"""
+    
+    # Map platform to filename
+    file_map = {
+        "win": ("TSRID.Agent.Setup.exe", "application/x-msdownload"),
+        "windows": ("TSRID.Agent.Setup.exe", "application/x-msdownload"),
+        "mac": ("TSRID.Agent.dmg", "application/x-apple-diskimage"),
+        "macos": ("TSRID.Agent.dmg", "application/x-apple-diskimage"),
+        "linux": ("TSRID.Agent.AppImage", "application/x-executable"),
+    }
+    
+    platform_lower = platform.lower()
+    if platform_lower not in file_map:
+        raise HTTPException(status_code=400, detail=f"Invalid platform: {platform}")
+    
+    filename, content_type = file_map[platform_lower]
+    
+    # Path to the file
+    file_path = Path("/app/frontend/public/downloads/v1.0.2") / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {filename}")
+    
+    return FileResponse(
+        path=str(file_path),
+        filename=filename,
+        media_type=content_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Cache-Control": "no-cache"
+        }
+    )
