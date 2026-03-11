@@ -648,15 +648,20 @@ const ElectronAgentManagement = () => {
                   </div>
                   <div className="flex gap-2">
                     {latestBuilds.win ? (
-                      <a 
-                        href={latestBuilds.win.artifact_url}
-                        download="TSRID.Agent.Setup.exe"
-                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white"
-                        data-testid="download-win-exe"
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        .exe
-                      </a>
+                      <>
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                          onClick={() => {
+                            navigator.clipboard.writeText(latestBuilds.win.artifact_url);
+                            toast.success('Download-Link kopiert! Fügen Sie ihn in Ihren Browser ein.');
+                          }}
+                          data-testid="copy-win-link"
+                        >
+                          <Copy className="w-4 h-4 mr-1" />
+                          Link kopieren
+                        </Button>
+                      </>
                     ) : (
                       <Button 
                         size="sm"
@@ -691,15 +696,18 @@ const ElectronAgentManagement = () => {
                   </div>
                   <div className="flex gap-2">
                     {latestBuilds.mac ? (
-                      <a 
-                        href={latestBuilds.mac.artifact_url}
-                        download="TSRID.Agent.dmg"
-                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white"
-                        data-testid="download-mac-dmg"
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => {
+                          navigator.clipboard.writeText(latestBuilds.mac.artifact_url);
+                          toast.success('Download-Link kopiert! Fügen Sie ihn in Ihren Browser ein.');
+                        }}
+                        data-testid="copy-mac-link"
                       >
-                        <Download className="w-4 h-4 mr-1" />
-                        .dmg
-                      </a>
+                        <Copy className="w-4 h-4 mr-1" />
+                        Link kopieren
+                      </Button>
                     ) : (
                       <Button 
                         size="sm"
@@ -734,15 +742,18 @@ const ElectronAgentManagement = () => {
                   </div>
                   <div className="flex gap-2">
                     {latestBuilds.linux ? (
-                      <a 
-                        href={latestBuilds.linux.artifact_url}
-                        download="TSRID.Agent.AppImage"
-                        className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md bg-green-600 hover:bg-green-700 text-white"
-                        data-testid="download-linux-appimage"
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => {
+                          navigator.clipboard.writeText(latestBuilds.linux.artifact_url);
+                          toast.success('Download-Link kopiert! Fügen Sie ihn in Ihren Browser ein.');
+                        }}
+                        data-testid="copy-linux-link"
                       >
-                        <Download className="w-4 h-4 mr-1" />
-                        .AppImage
-                      </a>
+                        <Copy className="w-4 h-4 mr-1" />
+                        Link kopieren
+                      </Button>
                     ) : (
                       <Button 
                         size="sm"
